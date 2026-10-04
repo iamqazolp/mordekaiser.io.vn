@@ -16,6 +16,8 @@
 * {
 	margin: 0;
 	padding: 0;
+	/* border-box cho toàn trang để padding+border không cộng thêm vào chiều rộng, tránh thẻ thứ 3 rớt xuống dòng */
+	box-sizing: border-box;
 }
 
 body {
@@ -140,8 +142,6 @@ a {
 .card {
 	/* thiếu position: relative nên .badge (absolute) neo theo trang thay vì theo từng thẻ */
 	position: relative;
-	/* thiếu border-box nên padding+border cộng thêm vào chiều rộng, làm thẻ thứ 3 rớt xuống dòng */
-	box-sizing: border-box;
 	flex: 0 0 calc((100% - 48px) / 3);
 	/* bỏ "height: 300px" cố định vì làm chữ tràn ra ngoài thẻ; để chiều cao tự co theo nội dung */
 	background: #fff;

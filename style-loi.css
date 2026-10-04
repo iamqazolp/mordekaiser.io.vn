@@ -33,10 +33,6 @@ a {
 .site-header {
 	background: #2b2b2b;
 	position: sticky;
-	/* sticky phải có top thì mới dính lại khi cuộn */
-	top: 0;
-	/* z-index cao hơn .hero-overlay (5) để menu luôn nằm trên ảnh */
-	z-index: 10;
 }
 
 .header-inner {
@@ -72,19 +68,13 @@ a {
 
 /* ===== Hero ===== */
 .hero {
-	/* thiếu position: relative nên .hero-overlay (absolute) không neo theo khung hero, tiêu đề bị lệch khỏi giữa ảnh */
-	position: relative;
 	height: 360px;
 	overflow: hidden;
 }
 
 .hero-bg {
-	/* img mặc định là inline nên sinh khoảng trống phía dưới -> chuyển sang block */
-	display: block;
 	width: 100%;
 	height: 100%;
-	/* thiếu object-fit nên ảnh bị méo hoặc không phủ kín khung; cover giúp phủ kín đúng tỉ lệ */
-	object-fit: cover;
 }
 
 .hero-overlay {
@@ -138,12 +128,8 @@ a {
 }
 
 .card {
-	/* thiếu position: relative nên .badge (absolute) neo theo trang thay vì theo từng thẻ */
-	position: relative;
-	/* thiếu border-box nên padding+border cộng thêm vào chiều rộng, làm thẻ thứ 3 rớt xuống dòng */
-	box-sizing: border-box;
 	flex: 0 0 calc((100% - 48px) / 3);
-	/* bỏ "height: 300px" cố định vì làm chữ tràn ra ngoài thẻ; để chiều cao tự co theo nội dung */
+	height: 300px;
 	background: #fff;
 	border: 1px solid #e0d8c8;
 	border-radius: 8px;
@@ -165,10 +151,6 @@ a {
 
 .card img {
 	display: block;
-	/* ảnh giữ kích thước gốc nên tràn khỏi thẻ; ép vừa chiều rộng thẻ và giữ đúng tỉ lệ */
-	width: 100%;
-	height: auto;
-	max-width: 100%;
 }
 
 .card-body h3 {
@@ -191,11 +173,8 @@ a {
 /* ===== Nút lên đầu trang ===== */
 .back-to-top {
 	position: fixed;
-	/* vì lúc đầu "top: 24px" nên nút nằm góc trên bên phải; đổi sang bottom để nằm góc dưới bên phải */
-	bottom: 24px;
+	top: 24px;
 	right: 24px;
-	/* thêm z-index để nút luôn nổi trên nội dung khác */
-	z-index: 100;
 	width: 48px;
 	height: 48px;
 	background: #2b2b2b;

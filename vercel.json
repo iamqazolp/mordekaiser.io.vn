@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/qare", "destination": "/qare/index.html" },
+    { "source": "/qare/", "destination": "/qare/index.html" }
+  ]
+}

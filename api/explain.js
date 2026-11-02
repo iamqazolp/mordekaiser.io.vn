@@ -10,12 +10,20 @@
 
 const LETTERS = "ABCDEF";
 
-const SYSTEM_PROMPT =
+const DEFAULT_SUBJECT =
   "You are a tutor helping a candidate prepare for a Qualcomm AI Research Engineer (QARE) " +
   "technical screening covering math foundations, classical ML/DL, computer vision, NLP/sequence " +
-  "models, and LLMs/efficient AI. Explain concepts clearly and rigorously: give intuition first, " +
+  "models, and LLMs/efficient AI.";
+
+const PEDAGOGY_PROMPT =
+  "Explain concepts clearly and rigorously: give intuition first, " +
   "then derivation, then the exam trap or shortcut. Be concise. Use Markdown, and write math with " +
   "$...$ (inline) or $$...$$ (display) LaTeX.";
+
+function buildSystemPrompt(subject) {
+  const subj = String(subject || "").trim().slice(0, 600) || DEFAULT_SUBJECT;
+  return `${subj} ${PEDAGOGY_PROMPT}`;
+}
 
 function getChatUrl() {
   let base = (process.env.OPENAI_BASE_URL || "https://api.openai.com").replace(/\/+$/, "");
@@ -83,7 +91,7 @@ module.exports = async function handler(req, res) {
     const messages = [
       {
         role: "system",
-        content: SYSTEM_PROMPT + "\n\n" + buildQuestionContext(q, Boolean(body.revealed)),
+        content: buildSystemPrompt(body.subject) + "\n\n" + buildQuestionContext(q, Boolean(body.revealed)),
       },
       ...history,
     ];

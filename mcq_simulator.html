@@ -1008,7 +1008,10 @@
 <aside class="ai-panel" id="aiPanel">
   <div class="ai-head">
     <span class="ai-title">🤖 Ask AI</span>
-    <button class="subtle" onclick="toggleAI()">✕ Close</button>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <button class="subtle" id="aiClearBtn" onclick="clearCurrentAIChat()" title="Clear saved AI chat for this question" style="display:none;padding:4px 8px;font-size:11.5px;">🗑 Clear</button>
+      <button class="subtle" onclick="toggleAI()" style="padding:4px 9px;font-size:12px;">✕ Close</button>
+    </div>
   </div>
   <div class="ai-qlabel" id="aiQLabel"></div>
   <div class="ai-log" id="aiLog"></div>
@@ -3829,7 +3832,47 @@ function render() {
 }
 
 // ---------------- Ask AI module (local llm_server.py or Vercel /api/explain) ----------------
-const aiChats = {};
+const AI_CHAT_STORAGE_KEY = "sim_ai_chats_v1";
+let aiChats = {};
+try {
+  const rawChats = JSON.parse(localStorage.getItem(AI_CHAT_STORAGE_KEY) || "{}");
+  if (rawChats && typeof rawChats === "object") {
+    Object.keys(rawChats).forEach((k) => {
+      if (Array.isArray(rawChats[k])) {
+        aiChats[k] = rawChats[k].filter((m) => m && !m.pending);
+      }
+    });
+  }
+} catch (_) {
+  aiChats = {};
+}
+
+function saveAIChats() {
+  try {
+    const clean = {};
+    Object.keys(aiChats).forEach((k) => {
+      const arr = (aiChats[k] || []).filter((m) => m && !m.pending);
+      if (arr.length > 0) clean[k] = arr;
+    });
+    localStorage.setItem(AI_CHAT_STORAGE_KEY, JSON.stringify(clean));
+  } catch (_) {}
+}
+
+function clearCurrentAIChat() {
+  if (aiBusy) return;
+  const q = filtered[idx];
+  if (!q) return;
+  const chatKey = `${currentDeck.id}:${q.id}`;
+  const legacyKey = q.id;
+  if (!(aiChats[chatKey]?.length || aiChats[legacyKey]?.length)) return;
+  if (confirm(`Clear saved AI conversation for ${q.id}?`)) {
+    delete aiChats[chatKey];
+    delete aiChats[legacyKey];
+    saveAIChats();
+    render();
+  }
+}
+
 let aiOpen = false;
 let aiBusy = false;
 
@@ -3884,14 +3927,26 @@ function renderAI(q, revealed) {
   const panel = document.getElementById("aiPanel");
   const fab = document.getElementById("aiFab");
   const btn = document.getElementById("aiBtn");
+  const clearBtn = document.getElementById("aiClearBtn");
+  const chatKey = `${currentDeck.id}:${q.id}`;
+  if (!aiChats[chatKey] && aiChats[q.id]) {
+    aiChats[chatKey] = aiChats[q.id];
+    delete aiChats[q.id];
+    saveAIChats();
+  }
+  const history = aiChats[chatKey] || [];
+  const savedCount = history.filter((m) => !m.pending).length;
+  const countSuffix = savedCount > 0 ? ` (${savedCount})` : "";
+
   btn.style.display = canAsk ? "inline-block" : "none";
-  btn.textContent = aiOpen ? "🤖 Hide AI" : "🤖 Ask AI";
+  btn.textContent = (aiOpen ? "🤖 Hide AI" : "🤖 Ask AI") + countSuffix;
+  fab.textContent = "🤖 Ask AI" + countSuffix;
   fab.className = "ai-fab" + (canAsk && !aiOpen ? " visible" : "");
+  if (clearBtn) clearBtn.style.display = savedCount > 0 ? "inline-block" : "none";
   document.body.classList.toggle("ai-open", aiOpen);
   panel.className = "ai-panel" + (aiOpen ? " visible" : "");
   if (!aiOpen) return;
-  document.getElementById("aiQLabel").textContent = q.id + " · " + q.topic;
-  const chatKey = `${currentDeck.id}:${q.id}`;
+  document.getElementById("aiQLabel").textContent = q.id + " · " + q.topic + (savedCount > 0 ? " · Saved in browser" : "");
   const log = document.getElementById("aiLog");
   log.innerHTML = "";
   if (!revealed) {
@@ -3900,7 +3955,7 @@ function renderAI(q, revealed) {
     d.textContent = "💡 Answer not revealed yet: the AI will give hints and concepts without stating the correct option. Check your answer (or finish the exam) for full explanations.";
     log.appendChild(d);
   }
-  (aiChats[chatKey] || []).forEach((m) => {
+  history.forEach((m) => {
     const d = document.createElement("div");
     d.className = "ai-msg " + m.role + (m.error ? " error" : "") + (m.pending ? " pending" : "");
     if (m.role === "assistant" && !m.error && !m.pending) d.innerHTML = mdToHtml(m.content);
@@ -3923,6 +3978,7 @@ async function sendAI(preset) {
   const chatKey = `${currentDeck.id}:${q.id}`;
   const chat = (aiChats[chatKey] = aiChats[chatKey] || []);
   chat.push({ role: "user", content: text });
+  saveAIChats();
   const pending = { role: "assistant", content: "Thinking…", pending: true };
   chat.push(pending);
   aiBusy = true;
@@ -3950,6 +4006,7 @@ async function sendAI(preset) {
       : String(err.message || err);
     chat.splice(chat.indexOf(pending), 1, { role: "assistant", content: msg, error: true });
   }
+  saveAIChats();
   aiBusy = false;
   render();
 }

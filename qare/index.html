@@ -1017,7 +1017,7 @@
     <button class="primary" onclick="sendAI()" id="aiSendBtn">Ask</button>
     <button class="subtle" id="aiFullBtn" onclick="sendAI('Explain this question in depth: intuition, step-by-step derivation, why each wrong option is wrong, and the exam trap.')">Explain fully</button>
   </div>
-  <div class="ai-hint">Ctrl/⌘+Enter to send · Shortcut: <code>I</code> · Pre-submit = Hints only; Post-submit = Full solution</div>
+  <div class="ai-hint"><code>Enter</code> to send · <code>Shift+Enter</code> for newline · Shortcut: <code>I</code> · Pre-submit = Hints only; Post-submit = Full solution</div>
 </aside>
 
 <script>
@@ -3955,7 +3955,7 @@ async function sendAI(preset) {
 }
 
 document.addEventListener("keydown", (e) => {
-  if (e.target && e.target.id === "aiInput" && e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+  if (e.target && e.target.id === "aiInput" && e.key === "Enter" && !e.shiftKey && !e.isComposing) {
     e.preventDefault();
     sendAI();
   }

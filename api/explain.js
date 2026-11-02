@@ -1,6 +1,6 @@
 /**
  * Vercel Serverless Function: POST /api/explain
- * Mirrors `phase1_mcq_prep/llm_server.py` for hosted Vercel deployments.
+ * Mirrors `simulator/llm_server.py` for hosted Vercel deployments.
  *
  * Required Vercel Environment Variables (Project Settings -> Environment Variables):
  *   - OPENAI_API_KEY   (secret API key; never exposed to browser)
@@ -9,7 +9,7 @@
  */
 
 const LETTERS = "ABCDEF";
-// Prompt text and limits are shared with phase1_mcq_prep/llm_server.py so both backends behave the same.
+// Prompt text and limits are shared with simulator/llm_server.py so both backends behave the same.
 const PROMPT = require("./_prompt.json");
 const LIMITS = PROMPT.limits;
 

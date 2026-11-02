@@ -1,8 +1,20 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/phase1_mcq_prep/mcq_simulator.html" },
-    { "source": "/qare", "destination": "/phase1_mcq_prep/mcq_simulator.html" },
-    { "source": "/qare/", "destination": "/phase1_mcq_prep/mcq_simulator.html" },
-    { "source": "/mcq_simulator.html", "destination": "/phase1_mcq_prep/mcq_simulator.html" }
+    {
+      "source": "/qare",
+      "destination": "/qare/index.html"
+    },
+    {
+      "source": "/qare/",
+      "destination": "/qare/index.html"
+    },
+    {
+      "source": "/study-hub",
+      "destination": "/qare/index.html"
+    },
+    {
+      "source": "/study-hub/",
+      "destination": "/qare/index.html"
+    }
   ]
 }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="pageTitle">Qualcomm AI Residency (QARE) — Master MCQ Simulator</title>
+<title id="pageTitle">Study Hub — Interactive MCQ &amp; Theory Simulator</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMath()"></script>
@@ -1223,8 +1223,8 @@ body.dock-resizing, body.dock-resizing * { cursor: col-resize !important; user-s
 
 <header>
   <div class="brand">
-    <span class="badge" id="brandBadge">QARE Phase 1</span>
-    <span class="brand-title" id="brandTitle">100-Q HackerRank Master Simulator</span>
+    <span class="badge" id="brandBadge">Study Hub</span>
+    <span class="brand-title" id="brandTitle">Interactive MCQ &amp; Theory Simulator</span>
   </div>
 
   <div class="controls">
@@ -5413,7 +5413,7 @@ async function sendAI(preset) {
     persistChat(key, (cur) => [...cur, { role: "user", content: text, t, rev }, { role: "assistant", content: data.answer, t: t + 1, rev }]);
   } catch (err) {
     const msg = (location.protocol === "file:")
-      ? "Ask AI needs the local server: double-click Start Simulator.command in phase1_mcq_prep (it opens the simulator for you)."
+      ? "Ask AI needs the local server: double-click Start Simulator.command in simulator/ (it opens the simulator for you)."
       : String(err.message || err);
     aiErrors[key] = { text, error: msg };
   }

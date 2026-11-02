@@ -9,20 +9,13 @@
  */
 
 const LETTERS = "ABCDEF";
-
-const DEFAULT_SUBJECT =
-  "You are a tutor helping a candidate prepare for a Qualcomm AI Research Engineer (QARE) " +
-  "technical screening covering math foundations, classical ML/DL, computer vision, NLP/sequence " +
-  "models, and LLMs/efficient AI.";
-
-const PEDAGOGY_PROMPT =
-  "Explain concepts clearly and rigorously: give intuition first, " +
-  "then derivation, then the exam trap or shortcut. Be concise. Use Markdown, and write math with " +
-  "$...$ (inline) or $$...$$ (display) LaTeX.";
+// Prompt text and limits are shared with phase1_mcq_prep/llm_server.py so both backends behave the same.
+const PROMPT = require("./_prompt.json");
+const LIMITS = PROMPT.limits;
 
 function buildSystemPrompt(subject) {
-  const subj = String(subject || "").trim().slice(0, 600) || DEFAULT_SUBJECT;
-  return `${subj} ${PEDAGOGY_PROMPT}`;
+  const subj = String(subject || "").trim().slice(0, LIMITS.subject_chars) || PROMPT.default_subject;
+  return `${subj} ${PROMPT.pedagogy}`;
 }
 
 function getChatUrl() {
@@ -37,7 +30,7 @@ function buildQuestionContext(q, revealed = true) {
     .map((o, i) => `${LETTERS[i] || i + 1}. ${o}`)
     .join("\n");
   let ctx =
-    "Here is the exam question the user is asking about (HTML/LaTeX may appear in the text).\n\n" +
+    `${PROMPT.question_intro}\n\n` +
     `Topic: ${q.topic || ""} | Difficulty: ${q.difficulty || ""}\n` +
     `Question: ${q.q || ""}\n\nOptions:\n${opts}\n`;
 
@@ -45,13 +38,35 @@ function buildQuestionContext(q, revealed = true) {
     const correct = q.ans.map((i) => LETTERS[i] || i + 1).join(", ");
     ctx += `\nCorrect answer: ${correct}\nReference explanation: ${q.exp || ""}`;
   } else {
-    ctx +=
-      "\nThe user has NOT submitted an answer yet. Do not reveal or confirm which option is " +
-      "correct and do not give the final answer. Give hints, relevant concepts, and guiding " +
-      "steps so they can work it out themselves; you may check their reasoning without " +
-      "naming the final option.";
+    ctx += "\n" + PROMPT.hint_mode;
   }
   return ctx;
+}
+
+// Newest messages first, until the message-count or character budget is reached.
+function trimHistory(history) {
+  const out = [];
+  let used = 0;
+  for (const m of history.slice(-LIMITS.history_max_messages).reverse()) {
+    const content = String(m.content || "").slice(0, LIMITS.history_message_chars);
+    if (out.length && used + content.length > LIMITS.history_char_budget) break;
+    out.push({ role: m.role, content });
+    used += content.length;
+  }
+  return out.reverse();
+}
+
+// Textbook chapter (the PDF's source text) the browser may attach as grounding.
+function buildReferenceContext(ref) {
+  if (!ref || typeof ref !== "object") return "";
+  let text = String(ref.text || "").trim();
+  if (!text) return "";
+  if (text.length > LIMITS.reference_chars) text = text.slice(0, LIMITS.reference_chars) + "\n[... chapter truncated ...]";
+  const title = String(ref.title || "").trim().slice(0, 200);
+  const source = String(ref.source || "").trim().slice(0, 200);
+  let label = title ? `"${title}"` : "the relevant chapter";
+  if (source) label += ` from ${source}`;
+  return "\n\n" + PROMPT.textbook_intro.replace("{label}", label) + "\n<<<TEXTBOOK\n" + text + "\nTEXTBOOK>>>";
 }
 
 module.exports = async function handler(req, res) {
@@ -76,13 +91,7 @@ module.exports = async function handler(req, res) {
     }
 
     const rawHistory = Array.isArray(body.messages) ? body.messages : [];
-    const history = rawHistory
-      .filter((m) => m && (m.role === "user" || m.role === "assistant"))
-      .slice(-12)
-      .map((m) => ({
-        role: m.role,
-        content: String(m.content || "").slice(0, 4000),
-      }));
+    const history = trimHistory(rawHistory.filter((m) => m && (m.role === "user" || m.role === "assistant")));
 
     if (history.length === 0 || history[history.length - 1].role !== "user") {
       return res.status(400).json({ error: "bad request: messages must end with a user message" });
@@ -91,7 +100,11 @@ module.exports = async function handler(req, res) {
     const messages = [
       {
         role: "system",
-        content: buildSystemPrompt(body.subject) + "\n\n" + buildQuestionContext(q, Boolean(body.revealed)),
+        content:
+          buildSystemPrompt(body.subject) +
+          "\n\n" +
+          buildQuestionContext(q, Boolean(body.revealed)) +
+          buildReferenceContext(body.reference),
       },
       ...history,
     ];
@@ -103,7 +116,7 @@ module.exports = async function handler(req, res) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: process.env.MODEL_NAME || "gpt-4o-mini",
+        model: process.env.MODEL_NAME || PROMPT.default_model,
         messages,
       }),
     });

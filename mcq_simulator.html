@@ -1674,6 +1674,429 @@ body.dock-wide .theory-fig-grid > .theory-fig.fig-wide img {
   color: var(--accent-text);
   margin-bottom: 4px;
 }
+
+/* ==========================================================================
+   Full-Page Theory Reading Mode (body.theory-reading-mode)
+   ========================================================================== */
+body.theory-reading-mode #searchInput,
+body.theory-reading-mode #cselect-pillarFilter,
+body.theory-reading-mode #cselect-difficultyFilter {
+  display: none !important;
+}
+body.theory-reading-mode .sidebar {
+  padding-top: 20px;
+}
+body.theory-reading-mode .sidebar > .nav-section,
+body.theory-reading-mode .sidebar > .stats-box {
+  display: none !important;
+}
+body.theory-reading-mode .theory-sidebar-nav {
+  display: flex !important;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+body.theory-reading-mode .main {
+  max-width: 1080px;
+  padding: 20px 34px 44px;
+}
+body.theory-reading-mode .q-card,
+body.theory-reading-mode .exam-banner {
+  display: none !important;
+}
+body.theory-reading-mode .theory-reader-card {
+  display: flex !important;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  overflow: visible;
+}
+
+/* Left Sidebar — Chapter List & Live Page Outline in Theory Reading Mode */
+.theory-side-chapters {
+  display: flex;
+  flex-direction: column;
+  min-height: 150px;
+  max-height: 36vh;
+  flex: 1 1 auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  padding: 9px 10px;
+  box-shadow: var(--shadow-card);
+}
+.theory-chapter-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overscroll-behavior: contain;
+}
+.theory-chapter-group-title {
+  font-size: 10.3px;
+  font-weight: 750;
+  letter-spacing: 0.45px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 7px 6px 2px;
+  margin-top: 2px;
+  border-top: 1px dashed var(--border-soft);
+}
+.theory-chapter-group-title:first-child {
+  padding-top: 2px;
+  margin-top: 0;
+  border-top: none;
+}
+.theory-chapter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  width: 100%;
+  text-align: left;
+  padding: 6px 8px;
+  border: none;
+  border-left: 2.5px solid transparent;
+  border-radius: 0 6px 6px 0;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  cursor: pointer;
+}
+.theory-chapter-btn:hover {
+  border-color: transparent;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+.theory-chapter-btn.active {
+  border-left-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-weight: 750;
+}
+.theory-chapter-btn-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+.theory-chapter-tag {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10.2px;
+  font-weight: 750;
+  padding: 1.5px 5px;
+  border-radius: 4px;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-soft);
+  color: var(--accent-text);
+  flex-shrink: 0;
+}
+.theory-chapter-btn.active .theory-chapter-tag {
+  background: var(--bg-card);
+  border-color: var(--accent);
+}
+.theory-chapter-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.theory-chapter-qcnt {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10.4px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.theory-chapter-btn.active .theory-chapter-qcnt {
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+.theory-side-toc {
+  display: flex;
+  flex-direction: column;
+  min-height: 110px;
+  max-height: 32vh;
+  flex: 1 1 auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  padding: 9px 10px;
+  box-shadow: var(--shadow-card);
+}
+.theory-side-toc-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overscroll-behavior: contain;
+}
+.theory-side-toc-list .toc-item {
+  font-size: 12px;
+  padding: 5.5px 8px;
+}
+
+.theory-practice-box {
+  flex: 0 0 auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: var(--shadow-card);
+}
+.theory-practice-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11.8px;
+  color: var(--text-muted);
+  font-weight: 650;
+}
+.theory-practice-meta b {
+  color: var(--text-main);
+  font-weight: 750;
+}
+.theory-practice-btn {
+  width: 100%;
+  padding: 7.5px 12px;
+  font-size: 12.4px;
+  text-align: center;
+}
+
+/* Main Full-Page Theory Reader Card Header & Content */
+.theory-reader-hero {
+  padding: 20px 34px 18px;
+  background: var(--bg-inset);
+  border-bottom: 1px solid var(--border-soft);
+  border-radius: 12px 12px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+#theoryReaderHero {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.theory-reader-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--border-soft);
+}
+.theory-reader-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 320px;
+  min-width: 0;
+}
+#cselect-theoryReaderSelect {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 440px;
+}
+#cselect-theoryReaderSelect .cselect-btn {
+  width: 100%;
+  max-width: none;
+  height: 32px;
+  padding: 0 10px;
+  font-size: 12.2px;
+}
+#cselect-theoryReaderSelect .cselect-pop {
+  min-width: max(100%, 340px);
+  max-width: min(540px, calc(100vw - 36px));
+}
+.theory-reader-badges {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.theory-reader-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.theory-reader-nav-left > button,
+.theory-reader-actions button,
+.theory-reader-actions .theory-action-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 32px;
+  padding: 0 11px;
+  border-radius: 7px;
+  font-size: 12.2px;
+  font-weight: 650;
+  line-height: 1;
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-strong);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.14s ease;
+}
+.theory-reader-nav-left > button:hover,
+.theory-reader-actions button:hover,
+.theory-reader-actions .theory-action-link:hover {
+  border-color: var(--accent);
+  background: var(--bg-opt-hover);
+  color: var(--accent-text);
+}
+.theory-reader-title {
+  font-size: 22px;
+  font-weight: 820;
+  color: var(--text-main);
+  line-height: 1.3;
+  margin: 0;
+}
+
+.theory-reader-body {
+  padding: 26px 34px 36px;
+  font-size: 15.5px;
+  line-height: 1.78;
+  overflow: visible;
+}
+.theory-reader-body h2.theory-h2 {
+  font-size: 21px;
+  margin: 26px 0 12px;
+  scroll-margin-top: calc(var(--hdr, 66px) + 18px);
+}
+.theory-reader-body h2.theory-h2:first-child {
+  margin-top: 4px;
+}
+.theory-reader-body h3.theory-h3 {
+  font-size: 17.5px;
+  margin: 26px 0 12px;
+  padding: 8px 14px;
+  scroll-margin-top: calc(var(--hdr, 66px) + 18px);
+}
+.theory-reader-body h4.theory-h4 {
+  font-size: 15.5px;
+  margin: 18px 0 8px;
+  scroll-margin-top: calc(var(--hdr, 66px) + 18px);
+}
+.theory-reader-body .theory-mermaid svg {
+  max-height: 540px;
+}
+.theory-reader-body .theory-fig.fig-compact {
+  max-width: min(100%, 680px);
+}
+.theory-reader-body .theory-fig.fig-compact img {
+  max-height: 400px;
+}
+.theory-reader-body .theory-fig.fig-single {
+  max-width: min(100%, 820px);
+}
+.theory-reader-body .theory-fig.fig-single img {
+  max-height: 450px;
+}
+.theory-reader-body .theory-fig.fig-duo {
+  max-width: min(100%, 960px);
+}
+.theory-reader-body .theory-fig.fig-duo img {
+  max-height: 480px;
+}
+.theory-reader-body .theory-fig.fig-wide {
+  max-width: min(100%, 1040px);
+}
+.theory-reader-body .theory-fig.fig-wide img {
+  max-height: 520px;
+}
+.theory-reader-body .theory-fig-grid > .theory-fig img {
+  height: 330px;
+  max-height: 330px;
+}
+
+.theory-reader-footer {
+  padding: 20px 34px 28px;
+  border-top: 1px solid var(--border-strong);
+  background: var(--bg-inset);
+  border-radius: 0 0 12px 12px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: stretch;
+}
+.theory-nav-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  padding: 11px 15px;
+  border-radius: 9px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  color: var(--text-main);
+  text-align: left;
+  cursor: pointer;
+}
+.theory-nav-card.next {
+  text-align: right;
+  align-items: flex-end;
+}
+.theory-nav-card:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--bg-opt-hover);
+}
+.theory-nav-card:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.theory-nav-dir {
+  font-size: 11px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.45px;
+  color: var(--text-muted);
+}
+.theory-nav-title {
+  font-size: 13.4px;
+  font-weight: 720;
+  color: var(--accent-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+.theory-nav-drill {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  padding: 11px 20px;
+}
+@media (max-width: 860px) {
+  .theory-reader-hero,
+  .theory-reader-body,
+  .theory-reader-footer {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .theory-reader-footer {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
 <body>
@@ -1699,6 +2122,7 @@ body.dock-wide .theory-fig-grid > .theory-fig.fig-wide img {
     <select id="modeSelect" onchange="changeMode()" title="Study Mode">
       <option value="drill">Practice Mode (Instant Derivation)</option>
       <option value="exam">Proctored Exam Mode (Grade at End)</option>
+      <option value="theory">📖 Theory Reading Mode (Full Textbook)</option>
     </select>
 
     <div class="theme-group" title="Eye-Care Theme Switcher">
@@ -1732,6 +2156,29 @@ body.dock-wide .theory-fig-grid > .theory-fig.fig-wide img {
       <div class="stat-row" style="font-size:11.5px;color:var(--text-muted);"><span>Question time</span> <span id="statQTime">0s</span></div>
     </div>
 
+    <div class="theory-sidebar-nav" id="theorySidebarNav" style="display:none;">
+      <div class="theory-side-chapters">
+        <div class="sidebar-section-title">
+          <span>TEXTBOOK CHAPTERS (<span id="theoryChapterCount">0</span>)</span>
+          <span id="theoryPillarCountLabel" style="font-weight:600;color:var(--accent-text);">All</span>
+        </div>
+        <div class="theory-chapter-list" id="theoryChapterList"></div>
+      </div>
+
+      <div class="theory-side-toc" id="theorySidebarTocWrap">
+        <div class="sidebar-section-title">
+          <span>ON THIS PAGE</span>
+          <span id="theoryReaderPct" style="font-weight:750;color:var(--accent-text);font-family:monospace;">0%</span>
+        </div>
+        <div class="theory-side-toc-list" id="theorySidebarToc"></div>
+      </div>
+
+      <div class="theory-practice-box" id="theoryPracticeBox">
+        <div class="theory-practice-meta" id="theoryPracticeMeta"></div>
+        <button class="primary theory-practice-btn" onclick="practiceCurrentTheorySection()">🎯 Practice Chapter Questions →</button>
+      </div>
+    </div>
+
     <details class="side-details" id="pdfDetails">
       <summary id="pdfSummary">📚 Study Textbooks</summary>
       <div class="inner pdf-list" id="pdfList"></div>
@@ -1762,8 +2209,9 @@ body.dock-wide .theory-fig-grid > .theory-fig.fig-wide img {
       <div class="inner shortcut-box" style="border:none;background:none;">
         • <code>1–4</code> or <code>A–D</code>: Select option<br>
         • <code>Enter</code>: Check Answer / Save<br>
-        • <code>←</code> / <code>→</code>: Prev / Next question<br>
-        • <code>F</code>: Flag • <code>H</code>: Hint • <code>T</code>: Theory • <code>I</code>: Ask AI • <code>R</code>: Retry Q
+        • <code>←</code> / <code>→</code>: Prev / Next (Q or Chapter)<br>
+        • <code>F</code>: Flag • <code>H</code>: Hint • <code>T</code>: Theory Tab<br>
+        • <code>Shift+T</code>: Full Theory Reader • <code>I</code>: Ask AI • <code>R</code>: Retry Q
       </div>
     </details>
   </aside>
@@ -1771,7 +2219,7 @@ body.dock-wide .theory-fig-grid > .theory-fig.fig-wide img {
   <main class="main">
     <div class="exam-banner" id="examBanner"></div>
 
-    <div class="q-card">
+    <div class="q-card" id="qCard">
       <div class="q-header-row">
         <div class="q-meta" id="qMeta"></div>
         <div style="font-size:12.5px;color:var(--text-muted);font-weight:650;" id="qPositionLabel">Question 1</div>
@@ -1789,6 +2237,7 @@ body.dock-wide .theory-fig-grid > .theory-fig.fig-wide img {
           <button class="warn" onclick="toggleFlag()" id="flagBtn">⚑ Flag</button>
           <button class="subtle" onclick="toggleHint()" id="hintBtn">💡 Speed Hint</button>
           <button class="subtle" onclick="toggleTheory()" id="theoryBtn">📖 Theory</button>
+          <button class="subtle" onclick="enterTheoryReadingMode()" id="theoryFullBtn" title="Open Full-Page Theory Reading Mode (Shift+T)">📚 Full Reader</button>
           <button class="subtle" onclick="retryCurrentQ()" id="retryBtn" style="display:none;">↺ Retry Question</button>
           <button class="subtle" onclick="toggleAI()" id="aiBtn" style="display:none;">🤖 Ask AI</button>
         </div>
@@ -1800,6 +2249,28 @@ body.dock-wide .theory-fig-grid > .theory-fig.fig-wide img {
 
       <div class="explanation" id="qExplanation"></div>
     </div>
+
+    <article class="theory-reader-card" id="theoryReaderCard" style="display:none;">
+      <div class="theory-reader-hero">
+        <div class="theory-reader-top-row">
+          <div class="theory-reader-nav-left">
+            <button type="button" class="subtle" onclick="exitTheoryReadingMode()" title="Return to MCQ Question Practice (Shift+T)">← Back to Questions</button>
+            <select id="theoryReaderSelect" onchange="selectTheorySection(this.value)" title="Switch Textbook Chapter / Section"></select>
+          </div>
+          <div class="theory-reader-actions">
+            <button type="button" class="subtle" id="theoryReaderDrillBtn" onclick="practiceCurrentTheorySection()" title="Practice MCQs for this chapter">🎯 Drill Chapter Qs</button>
+            <a class="subtle theory-action-link" id="theoryReaderPdfLink" href="#" target="_blank" rel="noopener" title="Open printable PDF textbook">📄 PDF</a>
+            <button type="button" class="subtle" onclick="switchReaderToDock()" title="Dock theory to side panel alongside questions">◫ Side Tab</button>
+            <button type="button" class="subtle" id="theoryReaderAiBtn" onclick="toggleAI()" title="Ask AI about this chapter (I)">🤖 Ask AI</button>
+          </div>
+        </div>
+        <div id="theoryReaderHero"></div>
+      </div>
+
+      <div class="theory-body theory-reader-body" id="theoryReaderBody"></div>
+
+      <div class="theory-reader-footer" id="theoryReaderFooter"></div>
+    </article>
   </main>
 </div>
 
@@ -1820,6 +2291,7 @@ body.dock-wide .theory-fig-grid > .theory-fig.fig-wide img {
     <div class="theory-bar">
       <select class="theory-select" id="theorySelect" onchange="selectTheorySection(this.value)" title="Switch theory section"></select>
       <button class="icon-btn" id="tocBtn" onclick="toggleTocPop(event)" title="Jump to a heading">☰ Contents</button>
+      <button class="icon-btn" id="theoryExpandBtn" onclick="enterTheoryReadingMode()" title="Expand to Full-Page Theory Reading Mode (Shift+T)">⤢ Full Reader</button>
       <a class="icon-btn" id="theoryPdfLink" href="#" target="_blank" rel="noopener" title="Open the PDF version">📄 PDF</a>
       <div class="toc-pop" id="tocPop">
         <div class="toc-pop-title">On this page</div>
@@ -7458,7 +7930,7 @@ function parseOptionParts(rawText) {
     s = mTag[2].trim();
   }
   const mMeta = s.match(/^(.*?)\s*\(([^()]+)\)\s*$/);
-  if (mMeta && mMeta[1].trim()) {
+  if (mMeta && mMeta[1].trim() && mMeta[2].trim().length <= 24) {
     s = mMeta[1].trim();
     meta = mMeta[2].trim();
   }
@@ -7744,6 +8216,12 @@ function switchDeck(deckId) {
   idx = 0;
   examFinished = false;
   showHint = false;
+  if (typeof activeTheoryId !== "undefined") {
+    activeTheoryId = "";
+    lastQuestionTheoryId = "";
+    renderedTheoryKey = "";
+    renderedReaderTheoryKey = "";
+  }
   localStorage.setItem("sim_active_deck", currentDeck.id);
   loadDeckState();
   populateDeckHeaderAndControls();
@@ -7784,8 +8262,9 @@ function renderMath() {
 
 function isTimerStopped() {
   if (manualPaused) return true;
-  const isExam = document.getElementById("modeSelect").value === "exam";
-  if (isExam) return examFinished;
+  const mode = document.getElementById("modeSelect").value;
+  if (mode === "theory") return true;
+  if (mode === "exam") return examFinished;
   const q = filtered[idx];
   const qs = (q && state[q.id]) ? state[q.id] : { submitted: false };
   return Boolean(qs.submitted);
@@ -7897,6 +8376,22 @@ function applyFilter() {
 }
 
 function changeMode() {
+  const mode = document.getElementById("modeSelect").value;
+  if (mode === "theory") {
+    theoryOpen = false;
+    closeTocPop();
+    const theoryMap = currentDeck.theory_sections || {};
+    const secKeys = Object.keys(theoryMap);
+    if (!activeTheoryId || !theoryMap[activeTheoryId]) {
+      const q = filtered[idx];
+      activeTheoryId = (q && q.theory_id && theoryMap[q.theory_id]) ? q.theory_id : (secKeys[0] || "");
+    }
+    syncQuestionIdxToTheory(activeTheoryId);
+    render();
+    window.scrollTo({ top: 0, behavior: "instant" });
+    return;
+  }
+  lastQuestionMode = mode;
   examFinished = false;
   document.getElementById("examBanner").className = "exam-banner";
   render();
@@ -8141,6 +8636,7 @@ function render() {
   renderAI(q, Boolean(revealFeedback));
   renderDock();
   renderSavedChatList();
+  if (typeof syncHeaderHeight === "function") syncHeaderHeight();
   renderMath();
   finishAIScroll();
 }
@@ -8176,6 +8672,11 @@ function toggleDockWide() {
 }
 
 function openDock(tab) {
+  if (tab === "theory" && typeof isTheoryMode === "function" && isTheoryMode()) {
+    aiOpen = false;
+    render();
+    return;
+  }
   theoryOpen = tab === "theory";
   aiOpen = tab === "ai";
   render();
@@ -8224,14 +8725,147 @@ function renderDock() {
   handle.addEventListener("dblclick", () => applyDockWidth(DOCK_DEFAULT_W, true));
   window.addEventListener("resize", () => applyDockWidth(dockW, false));
 })();
-// Theory pane: section picker, contents popover, reading progress, Mermaid diagrams.
+// Theory pane & Full-Page Theory Reading Mode: section picker, contents outline, reading progress, Mermaid diagrams.
 
-// ---------------- Theory Companion Drawer ----------------
+// ---------------- Theory Companion Drawer & Full Reader State ----------------
 let theoryOpen = false;
 let activeTheoryId = "";
 let lastQuestionTheoryId = "";
 let renderedTheoryKey = "";
+let renderedReaderTheoryKey = "";
+let lastQuestionMode = "drill";
 let mermaidLoaded = false;
+
+function isTheoryMode() {
+  const ms = document.getElementById("modeSelect");
+  return Boolean(ms && ms.value === "theory");
+}
+
+function syncQuestionIdxToTheory(secId) {
+  if (!secId) return;
+  const curQ = filtered[idx];
+  if (curQ && curQ.theory_id === secId) return;
+  const matchIdx = filtered.findIndex((q) => q.theory_id === secId);
+  if (matchIdx >= 0) {
+    idx = matchIdx;
+    showHint = false;
+  }
+}
+
+function enterTheoryReadingMode(secId) {
+  const theoryMap = currentDeck.theory_sections || {};
+  const secKeys = Object.keys(theoryMap);
+  if (!secKeys.length) return;
+
+  const dockBody = document.getElementById("theoryBody");
+  const scrollRatio = (theoryOpen && dockBody && dockBody.scrollHeight > dockBody.clientHeight)
+    ? dockBody.scrollTop / (dockBody.scrollHeight - dockBody.clientHeight)
+    : 0;
+
+  if (secId && theoryMap[secId]) {
+    activeTheoryId = secId;
+    renderedTheoryKey = "";
+    renderedReaderTheoryKey = "";
+  } else if (!activeTheoryId || !theoryMap[activeTheoryId]) {
+    const q = filtered[idx];
+    activeTheoryId = (q && q.theory_id && theoryMap[q.theory_id]) ? q.theory_id : secKeys[0];
+  }
+
+  const ms = document.getElementById("modeSelect");
+  if (ms && ms.value !== "theory") {
+    lastQuestionMode = ms.value || "drill";
+    ms.value = "theory";
+  }
+  theoryOpen = false;
+  closeTocPop();
+  syncQuestionIdxToTheory(activeTheoryId);
+  render();
+
+  requestAnimationFrame(() => {
+    const max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    window.scrollTo({ top: scrollRatio > 0 ? Math.round(scrollRatio * max) : 0, behavior: "instant" });
+    updateTheoryReaderScrollState();
+  });
+}
+
+function exitTheoryReadingMode() {
+  if (!isTheoryMode()) return;
+  const ms = document.getElementById("modeSelect");
+  if (ms) ms.value = (lastQuestionMode === "exam") ? "exam" : "drill";
+  render();
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+
+function switchReaderToDock() {
+  const max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  const ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+  const ms = document.getElementById("modeSelect");
+  if (ms && ms.value === "theory") {
+    ms.value = (lastQuestionMode === "exam") ? "exam" : "drill";
+  }
+  theoryOpen = true;
+  aiOpen = false;
+  render();
+  requestAnimationFrame(() => {
+    const dockBody = document.getElementById("theoryBody");
+    if (dockBody && dockBody.scrollHeight > dockBody.clientHeight) {
+      dockBody.scrollTop = Math.round(ratio * (dockBody.scrollHeight - dockBody.clientHeight));
+    }
+    updateTheoryScrollState();
+  });
+}
+
+function toggleTheoryReadingMode() {
+  if (isTheoryMode()) exitTheoryReadingMode();
+  else enterTheoryReadingMode();
+}
+
+function prevTheorySection() {
+  const secKeys = Object.keys(currentDeck.theory_sections || {});
+  const curIdx = secKeys.indexOf(activeTheoryId);
+  if (curIdx > 0) selectTheorySection(secKeys[curIdx - 1]);
+}
+
+function nextTheorySection() {
+  const secKeys = Object.keys(currentDeck.theory_sections || {});
+  const curIdx = secKeys.indexOf(activeTheoryId);
+  if (curIdx >= 0 && curIdx < secKeys.length - 1) selectTheorySection(secKeys[curIdx + 1]);
+}
+
+function practiceCurrentTheorySection() {
+  const theoryMap = currentDeck.theory_sections || {};
+  const curSec = theoryMap[activeTheoryId];
+  const secQs = QUESTIONS.filter((q) => q.theory_id === activeTheoryId);
+  const pf = document.getElementById("pillarFilter");
+  const df = document.getElementById("difficultyFilter");
+  const si = document.getElementById("searchInput");
+
+  if (pf) {
+    let targetVal = "ALL";
+    if (secQs.length > 0 && secQs[0].day) {
+      const dayVal = "DAY:" + secQs[0].day;
+      if (Array.from(pf.options).some((o) => o.value === dayVal)) targetVal = dayVal;
+    }
+    if (targetVal === "ALL" && curSec && curSec.pillar) {
+      const pilVal = "PILLAR:" + curSec.pillar;
+      if (Array.from(pf.options).some((o) => o.value === pilVal)) targetVal = pilVal;
+    }
+    pf.value = targetVal;
+  }
+  if (df) df.value = "ALL_DIFF";
+  if (si) si.value = "";
+
+  const ms = document.getElementById("modeSelect");
+  if (ms) ms.value = (lastQuestionMode === "exam") ? "exam" : "drill";
+
+  applyFilter();
+  const matchIdx = filtered.findIndex((q) => q.theory_id === activeTheoryId);
+  if (matchIdx >= 0) {
+    idx = matchIdx;
+    render();
+  }
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
 function ensureMermaidAndRender(container) {
   if (!container || !container.querySelector(".mermaid")) return;
@@ -8304,9 +8938,49 @@ function updateTheoryScrollState() {
 }
 document.getElementById("theoryBody").addEventListener("scroll", updateTheoryScrollState, { passive: true });
 
+function updateTheoryReaderScrollState() {
+  if (!isTheoryMode()) return;
+  const docEl = document.documentElement;
+  const max = Math.max(0, docEl.scrollHeight - window.innerHeight);
+  const pct = max > 0 ? Math.min(100, Math.max(0, (window.scrollY / max) * 100)) : 0;
+  const topFill = document.getElementById("topProgressFill");
+  if (topFill) topFill.style.width = Math.round(pct) + "%";
+  const pctLabel = document.getElementById("theoryReaderPct");
+  if (pctLabel) pctLabel.textContent = Math.round(pct) + "%";
+
+  const items = document.querySelectorAll("#theorySidebarToc .toc-item");
+  if (!items.length) return;
+  const readerBody = document.getElementById("theoryReaderBody");
+  const threshold = 110;
+  let current = null;
+  items.forEach((it) => {
+    const h = readerBody ? readerBody.querySelector("#" + CSS.escape(it.dataset.target)) : document.getElementById(it.dataset.target);
+    if (h && h.getBoundingClientRect().top <= threshold) current = it;
+  });
+  const activeItem = current || items[0];
+  items.forEach((it) => it.classList.toggle("current", it === activeItem));
+  if (activeItem) {
+    const sc = document.getElementById("theorySidebarToc");
+    if (sc && sc.scrollHeight > sc.clientHeight) {
+      const top = activeItem.offsetTop - sc.offsetTop;
+      if (top < sc.scrollTop || top + activeItem.offsetHeight > sc.scrollTop + sc.clientHeight) {
+        sc.scrollTop = Math.max(0, top - sc.clientHeight / 2 + activeItem.offsetHeight / 2);
+      }
+    }
+  }
+}
+window.addEventListener("scroll", updateTheoryReaderScrollState, { passive: true });
+
 function selectTheorySection(secId) {
   activeTheoryId = secId;
   renderedTheoryKey = "";
+  renderedReaderTheoryKey = "";
+  if (isTheoryMode()) {
+    syncQuestionIdxToTheory(secId);
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
   const q = filtered[idx];
   if (q) {
     renderTheory(q);
@@ -8316,42 +8990,17 @@ function selectTheorySection(secId) {
 
 function scrollToTheoryHeading(anchorId) {
   closeTocPop();
-  const el = document.getElementById(anchorId);
+  const container = isTheoryMode()
+    ? document.getElementById("theoryReaderBody")
+    : document.getElementById("theoryBody");
+  const el = (container && typeof CSS !== "undefined" && CSS.escape)
+    ? container.querySelector("#" + CSS.escape(anchorId))
+    : document.getElementById(anchorId);
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function renderTheory(q) {
-  const theoryMap = currentDeck.theory_sections || {};
-  const secKeys = Object.keys(theoryMap);
-  const tBtn = document.getElementById("theoryBtn");
-  const panel = document.getElementById("theoryPanel");
-
-  const dockTab = document.getElementById("dockTabTheory");
-  if (secKeys.length === 0) {
-    if (tBtn) tBtn.style.display = "none";
-    if (dockTab) dockTab.style.display = "none";
-    if (theoryOpen) theoryOpen = false;
-    panel.classList.remove("active");
-    return;
-  }
-  if (dockTab) dockTab.style.display = "";
-
-  const qTheoryId = (q && q.theory_id && theoryMap[q.theory_id]) ? q.theory_id : secKeys[0];
-  if (qTheoryId !== lastQuestionTheoryId || !activeTheoryId || !theoryMap[activeTheoryId]) {
-    activeTheoryId = qTheoryId;
-    lastQuestionTheoryId = qTheoryId;
-  }
-
-  if (tBtn) {
-    tBtn.style.display = "inline-block";
-    tBtn.textContent = theoryOpen ? "📖 Hide Theory" : `📖 Theory (${q.day || q.pillar})`;
-  }
-
-  panel.classList.toggle("active", theoryOpen);
-  if (!theoryOpen) return;
-
-  // Populate section selector dropdown (grouped by Pillar when >1 pillar exists)
-  const sel = document.getElementById("theorySelect");
+function populateTheorySelectDropdown(sel, theoryMap, secKeys) {
+  if (!sel) return;
   const pillarTitles = {};
   (currentDeck.pillars || []).forEach((p) => { pillarTitles[p.id] = p.title; });
   const byPillar = {};
@@ -8376,6 +9025,258 @@ function renderTheory(q) {
     }).join("");
   }
   rebuildCustomSelect(sel);
+}
+
+function bindTheoryContentEnhancements(bodyBox) {
+  if (!bodyBox) return;
+  const isFileProto = location.protocol === "file:";
+  bodyBox.querySelectorAll("img[data-asset]").forEach((img) => {
+    const rawSrc = img.getAttribute("data-asset") || "";
+    if (isFileProto && rawSrc.startsWith("/assets/")) {
+      img.src = ".." + rawSrc;
+    }
+    img.title = "Click to zoom figure";
+    img.onclick = () => openTheoryLightbox(img.src, img.alt || "");
+  });
+
+  bodyBox.querySelectorAll(".theory-mermaid").forEach((mWrap) => {
+    mWrap.title = "Click to zoom diagram";
+    mWrap.onclick = () => openTheoryMermaidLightbox(mWrap);
+  });
+
+  ensureMermaidAndRender(bodyBox);
+}
+
+function renderTheoryReader(theoryMap, secKeys) {
+  const curSec = theoryMap[activeTheoryId] || theoryMap[secKeys[0]];
+  if (!curSec) return;
+  const curIdx = secKeys.indexOf(curSec.id);
+  const prevSec = curIdx > 0 ? theoryMap[secKeys[curIdx - 1]] : null;
+  const nextSec = (curIdx >= 0 && curIdx < secKeys.length - 1) ? theoryMap[secKeys[curIdx + 1]] : null;
+
+  const pillarTitles = {};
+  (currentDeck.pillars || []).forEach((p) => { pillarTitles[p.id] = p.title; });
+  const byPillar = {};
+  secKeys.forEach((k) => {
+    const p = theoryMap[k].pillar || "Sections";
+    (byPillar[p] = byPillar[p] || []).push(k);
+  });
+  const pKeys = Object.keys(byPillar);
+
+  // 1. Sidebar Chapter List
+  const chCountEl = document.getElementById("theoryChapterCount");
+  if (chCountEl) chCountEl.textContent = secKeys.length;
+  const pCountEl = document.getElementById("theoryPillarCountLabel");
+  if (pCountEl) pCountEl.textContent = `${pKeys.length} Pillar${pKeys.length === 1 ? "" : "s"}`;
+
+  const chList = document.getElementById("theoryChapterList");
+  if (chList) {
+    chList.innerHTML = "";
+    let activeChapBtn = null;
+    pKeys.forEach((p) => {
+      if (pKeys.length > 1) {
+        const gTitle = document.createElement("div");
+        gTitle.className = "theory-chapter-group-title";
+        gTitle.textContent = pillarTitles[p] || p;
+        chList.appendChild(gTitle);
+      }
+      byPillar[p].forEach((k) => {
+        const sec = theoryMap[k];
+        const qCnt = QUESTIONS.filter((q) => q.theory_id === k).length;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "theory-chapter-btn" + (k === curSec.id ? " active" : "");
+        btn.dataset.secId = k;
+        btn.title = sec.title;
+        btn.onclick = () => selectTheorySection(k);
+        btn.innerHTML = `
+          <span class="theory-chapter-btn-main">
+            <span class="theory-chapter-tag">${escAttr(sec.pillar || sec.id)}</span>
+            <span class="theory-chapter-title">${escAttr(sec.title)}</span>
+          </span>
+          <span class="theory-chapter-qcnt">${qCnt} Qs</span>
+        `;
+        chList.appendChild(btn);
+        if (k === curSec.id) activeChapBtn = btn;
+      });
+    });
+    if (activeChapBtn && chList.scrollHeight > chList.clientHeight) {
+      const top = activeChapBtn.offsetTop - chList.offsetTop;
+      if (top < chList.scrollTop || top + activeChapBtn.offsetHeight > chList.scrollTop + chList.clientHeight) {
+        chList.scrollTop = Math.max(0, top - chList.clientHeight / 2 + activeChapBtn.offsetHeight / 2);
+      }
+    }
+  }
+
+  // 2. Sidebar Practice Box & Header Chapter Dropdown
+  const secQs = QUESTIONS.filter((q) => q.theory_id === curSec.id);
+  let secAtt = 0, secCor = 0;
+  secQs.forEach((q) => {
+    const st = state[q.id];
+    if (st && st.submitted) {
+      secAtt++;
+      if (st.correct) secCor++;
+    }
+  });
+  const secAcc = secAtt ? Math.round((secCor / secAtt) * 100) + "%" : "0%";
+  const pracMeta = document.getElementById("theoryPracticeMeta");
+  if (pracMeta) {
+    pracMeta.innerHTML = `<span><b>${secQs.length}</b> Chapter Questions</span><span><b>${secAtt}/${secQs.length}</b> Done (${secAcc})</span>`;
+  }
+
+  const readerSel = document.getElementById("theoryReaderSelect");
+  if (readerSel) {
+    populateTheorySelectDropdown(readerSel, theoryMap, secKeys);
+  }
+  const pdfLink = document.getElementById("theoryReaderPdfLink");
+  if (pdfLink) {
+    if (curSec.pdf) {
+      const prefix = location.protocol === "file:" ? "../pdfs/" : "/pdfs/";
+      pdfLink.href = curSec.pdf.startsWith("http") ? curSec.pdf : (prefix + curSec.pdf);
+      pdfLink.style.display = "";
+    } else {
+      pdfLink.style.display = "none";
+    }
+  }
+  const drillBtn = document.getElementById("theoryReaderDrillBtn");
+  if (drillBtn) {
+    drillBtn.textContent = `🎯 Drill ${secQs.length} Qs`;
+  }
+  const aiReaderBtn = document.getElementById("theoryReaderAiBtn");
+  if (aiReaderBtn) {
+    aiReaderBtn.textContent = aiOpen ? "🤖 Hide AI" : "🤖 Ask AI";
+  }
+
+  // 3. Render Chapter Hero, Body, Sidebar TOC, and Prev/Next Footer when section changes
+  const nextRenderKey = `${currentDeck.id}:${curSec.id}`;
+  if (renderedReaderTheoryKey !== nextRenderKey) {
+    renderedReaderTheoryKey = nextRenderKey;
+    const tocItems = curSec.toc || [];
+    const sideToc = document.getElementById("theorySidebarToc");
+    const sideTocWrap = document.getElementById("theorySidebarTocWrap");
+    if (sideToc) {
+      sideToc.innerHTML = tocItems.map((item) =>
+        `<button class="toc-item" data-target="${escAttr(item.id)}" onclick="scrollToTheoryHeading('${escAttr(item.id)}')">${item.label}</button>`
+      ).join("");
+    }
+    if (sideTocWrap) {
+      sideTocWrap.style.display = tocItems.length ? "" : "none";
+    }
+
+    const hero = document.getElementById("theoryReaderHero");
+    if (hero) {
+      const pilLabel = pillarTitles[curSec.pillar] || curSec.pillar || "Study Chapter";
+      hero.innerHTML = `
+        <div class="theory-reader-badges">
+          <span class="tag day">${escAttr(curSec.pillar)} · ${escAttr(pilLabel)}</span>
+          <span class="tag pillar">Chapter ${curIdx + 1} of ${secKeys.length}</span>
+          <span class="tag single">☰ ${tocItems.length} Subsections</span>
+          <span class="tag diff-easy">🎯 ${secQs.length} Linked Practice MCQs</span>
+        </div>
+        <h1 class="theory-reader-title">${escAttr(curSec.title)}</h1>
+      `;
+    }
+
+    const readerBody = document.getElementById("theoryReaderBody");
+    if (readerBody) {
+      readerBody.innerHTML = curSec.html || "<p>No theory content available for this chapter.</p>";
+      bindTheoryContentEnhancements(readerBody);
+    }
+
+    const footer = document.getElementById("theoryReaderFooter");
+    if (footer) {
+      footer.innerHTML = `
+        <button type="button" class="theory-nav-card prev" onclick="prevTheorySection()" ${prevSec ? "" : "disabled"}>
+          <span class="theory-nav-dir">← Previous Chapter</span>
+          <span class="theory-nav-title">${prevSec ? escAttr(`[${prevSec.pillar}] ${prevSec.title}`) : "Start of Textbook"}</span>
+        </button>
+        <button type="button" class="primary theory-nav-drill" onclick="practiceCurrentTheorySection()">
+          <span>🎯 Practice Chapter MCQs (${secQs.length} Qs)</span>
+        </button>
+        <button type="button" class="theory-nav-card next" onclick="nextTheorySection()" ${nextSec ? "" : "disabled"}>
+          <span class="theory-nav-dir">Next Chapter →</span>
+          <span class="theory-nav-title">${nextSec ? escAttr(`[${nextSec.pillar}] ${nextSec.title}`) : "End of Textbook"}</span>
+        </button>
+      `;
+    }
+  }
+
+  updateTheoryReaderScrollState();
+}
+
+function renderTheory(q) {
+  const theoryMap = currentDeck.theory_sections || {};
+  const secKeys = Object.keys(theoryMap);
+  const tBtn = document.getElementById("theoryBtn");
+  const tFullBtn = document.getElementById("theoryFullBtn");
+  const panel = document.getElementById("theoryPanel");
+  const dockTab = document.getElementById("dockTabTheory");
+  const ms = document.getElementById("modeSelect");
+  const theoryOpt = ms ? ms.querySelector('option[value="theory"]') : null;
+
+  if (secKeys.length === 0) {
+    if (tBtn) tBtn.style.display = "none";
+    if (tFullBtn) tFullBtn.style.display = "none";
+    if (dockTab) dockTab.style.display = "none";
+    if (theoryOpt) {
+      theoryOpt.disabled = true;
+      if (ms.value === "theory") ms.value = "drill";
+      rebuildCustomSelect(ms);
+    }
+    if (theoryOpen) theoryOpen = false;
+    document.body.classList.remove("theory-reading-mode");
+    panel.classList.remove("active");
+    return;
+  }
+
+  if (theoryOpt && theoryOpt.disabled) {
+    theoryOpt.disabled = false;
+    rebuildCustomSelect(ms);
+  }
+  if (dockTab) dockTab.style.display = "";
+
+  const inFullReader = isTheoryMode();
+  document.body.classList.toggle("theory-reading-mode", inFullReader);
+
+  const qTheoryId = (q && q.theory_id && theoryMap[q.theory_id]) ? q.theory_id : secKeys[0];
+  if (!inFullReader && (qTheoryId !== lastQuestionTheoryId || !activeTheoryId || !theoryMap[activeTheoryId])) {
+    activeTheoryId = qTheoryId;
+    lastQuestionTheoryId = qTheoryId;
+  } else if (!activeTheoryId || !theoryMap[activeTheoryId]) {
+    activeTheoryId = qTheoryId;
+    lastQuestionTheoryId = qTheoryId;
+  }
+
+  if (tBtn) {
+    tBtn.style.display = "inline-block";
+    tBtn.textContent = theoryOpen ? "📖 Hide Theory" : `📖 Theory (${q.day || q.pillar})`;
+  }
+  if (tFullBtn) {
+    tFullBtn.style.display = "inline-block";
+  }
+
+  if (inFullReader) {
+    theoryOpen = false;
+    panel.classList.remove("active");
+    if (renderedTheoryKey) {
+      const dockBody = document.getElementById("theoryBody");
+      if (dockBody) dockBody.innerHTML = "";
+      renderedTheoryKey = "";
+    }
+    renderTheoryReader(theoryMap, secKeys);
+    return;
+  }
+
+  if (renderedReaderTheoryKey) {
+    const readerBody = document.getElementById("theoryReaderBody");
+    if (readerBody) readerBody.innerHTML = "";
+    renderedReaderTheoryKey = "";
+  }
+
+  panel.classList.toggle("active", theoryOpen);
+  if (!theoryOpen) return;
+
+  populateTheorySelectDropdown(document.getElementById("theorySelect"), theoryMap, secKeys);
 
   const curSec = theoryMap[activeTheoryId] || theoryMap[secKeys[0]];
   const pdfLink = document.getElementById("theoryPdfLink");
@@ -8402,23 +9303,7 @@ function renderTheory(q) {
     bodyBox.innerHTML = curSec.html || "<p>No theory content available for this section.</p>";
     bodyBox.scrollTop = 0;
 
-    // Fix image asset links for file:// protocol and open in-page lightbox on click for both images and Mermaid diagrams
-    const isFileProto = location.protocol === "file:";
-    bodyBox.querySelectorAll("img[data-asset]").forEach((img) => {
-      const rawSrc = img.getAttribute("data-asset") || "";
-      if (isFileProto && rawSrc.startsWith("/assets/")) {
-        img.src = ".." + rawSrc;
-      }
-      img.title = "Click to zoom figure";
-      img.onclick = () => openTheoryLightbox(img.src, img.alt || "");
-    });
-
-    bodyBox.querySelectorAll(".theory-mermaid").forEach((mWrap) => {
-      mWrap.title = "Click to zoom diagram";
-      mWrap.onclick = () => openTheoryMermaidLightbox(mWrap);
-    });
-
-    ensureMermaidAndRender(bodyBox);
+    bindTheoryContentEnhancements(bodyBox);
     updateTheoryScrollState();
   }
 }
@@ -8622,6 +9507,10 @@ function openSavedChat(key) {
   const cut = key.indexOf(":");
   const deckId = key.slice(0, cut);
   const qid = key.slice(cut + 1);
+  if (typeof isTheoryMode === "function" && isTheoryMode()) {
+    const ms = document.getElementById("modeSelect");
+    if (ms) ms.value = (typeof lastQuestionMode === "string" && lastQuestionMode === "exam") ? "exam" : "drill";
+  }
   if (deckId !== currentDeck.id) {
     if (!DECKS.find((d) => d.id === deckId)) return;
     switchDeck(deckId);
@@ -8789,6 +9678,9 @@ function htmlToPlainText(html) {
 
 function theorySectionFor(q) {
   const map = currentDeck.theory_sections || {};
+  if (typeof isTheoryMode === "function" && isTheoryMode() && activeTheoryId && map[activeTheoryId]) {
+    return map[activeTheoryId];
+  }
   return (q && q.theory_id && map[q.theory_id]) || null;
 }
 
@@ -9085,24 +9977,26 @@ window.addEventListener("keydown", (e) => {
     }
   }
 
-  if (e.key === "ArrowRight") { e.preventDefault(); nextQ(); }
-  else if (e.key === "ArrowLeft") { e.preventDefault(); prevQ(); }
-  else if (e.key === "Enter") { e.preventDefault(); submitAnswer(); }
-  else if (e.key === "f" || e.key === "F") { e.preventDefault(); toggleFlag(); }
-  else if (e.key === "h" || e.key === "H") { e.preventDefault(); toggleHint(); }
-  else if (e.key === "t" || e.key === "T") { e.preventDefault(); toggleTheory(); }
+  if (e.key === "ArrowRight") { e.preventDefault(); if (isTheoryMode()) nextTheorySection(); else nextQ(); }
+  else if (e.key === "ArrowLeft") { e.preventDefault(); if (isTheoryMode()) prevTheorySection(); else prevQ(); }
+  else if ((e.key === "t" || e.key === "T") && e.shiftKey) { e.preventDefault(); toggleTheoryReadingMode(); }
+  else if (e.key === "t" || e.key === "T") { e.preventDefault(); if (isTheoryMode()) switchReaderToDock(); else toggleTheory(); }
   else if (e.key === "i" || e.key === "I") { e.preventDefault(); toggleAI(); }
   else if (e.key === "Escape" && (theoryOpen || aiOpen)) { e.preventDefault(); closeDock(); }
-  else if (e.key === "r" || e.key === "R") {
+  else if (e.key === "Escape" && isTheoryMode()) { e.preventDefault(); exitTheoryReadingMode(); }
+  else if (!isTheoryMode() && e.key === "Enter") { e.preventDefault(); submitAnswer(); }
+  else if (!isTheoryMode() && (e.key === "f" || e.key === "F")) { e.preventDefault(); toggleFlag(); }
+  else if (!isTheoryMode() && (e.key === "h" || e.key === "H")) { e.preventDefault(); toggleHint(); }
+  else if (!isTheoryMode() && (e.key === "r" || e.key === "R")) {
     const q = filtered[idx];
     if (q && state[q.id]?.submitted && document.getElementById("modeSelect").value !== "exam") {
       e.preventDefault();
       retryCurrentQ();
     }
-  } else if (["1", "2", "3", "4"].includes(e.key)) {
+  } else if (!isTheoryMode() && ["1", "2", "3", "4"].includes(e.key)) {
     e.preventDefault();
     selectOption(parseInt(e.key, 10) - 1);
-  } else if (["a", "b", "c", "d", "A", "B", "C", "D"].includes(e.key)) {
+  } else if (!isTheoryMode() && ["a", "b", "c", "d", "A", "B", "C", "D"].includes(e.key)) {
     e.preventDefault();
     selectOption(e.key.toUpperCase().charCodeAt(0) - 65);
   }

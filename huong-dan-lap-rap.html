@@ -1,0 +1,2741 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hướng Dẫn Lắp Ráp Tương Tác · Thư Viện Thông Minh IoT (IT4735 - Nhóm 3)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <style>
+    /* =========================================================================
+       EDITORIAL-ENGINEERING DESIGN SYSTEM (INSPIRED BY ARCHITECTURE.HTML)
+       ========================================================================= */
+    :root {
+      --paper: #f2ede4;
+      --paper2: #e8e1d3;
+      --card: #fbf9f4;
+      --ink: #17160f;
+      --ink2: #3b3930;
+      --muted: #7a756b;
+      --soft: #a8a296;
+      --rule: #d3ccbe;
+      --accent: #d63c1c;
+      --accent-t: rgba(214, 60, 28, 0.08);
+      --real: #2e7a4e;
+      --real-t: rgba(46, 122, 78, 0.10);
+      --link: #2853c9;
+      --link-t: rgba(40, 83, 201, 0.09);
+      --jev: #1f7a6b;
+      --amber: #c98a12;
+      --amber-t: rgba(201, 138, 18, 0.11);
+      --serif: "Newsreader", Georgia, serif;
+      --sans: "Be Vietnam Pro", "Helvetica Neue", system-ui, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+      --ease: cubic-bezier(0.2, 0.75, 0.2, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image: radial-gradient(circle, rgba(23, 22, 15, 0.075) 1px, transparent 1.3px);
+      background-size: 26px 26px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      position: relative;
+      padding-bottom: 64px;
+    }
+
+    /* Subtle archival paper grain overlay */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.28;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.08 0 0 0 0 0.05 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    code, .mono { font-family: var(--mono); }
+    code {
+      font-size: 0.88em;
+      background: var(--paper2);
+      border: 1px solid var(--rule);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: var(--ink);
+    }
+    pre code { background: none; border: none; padding: 0; color: inherit; font-size: inherit; }
+
+    /* Top Progress Hairline */
+    #topProgressLine {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 3px;
+      width: 0%;
+      background: var(--accent);
+      z-index: 120;
+      transition: width 0.55s var(--ease);
+    }
+
+    /* =========================================================================
+       EDITORIAL HEADER
+       ========================================================================= */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 80;
+      background: rgba(242, 237, 228, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1.5px solid var(--ink);
+      padding: 14px 24px;
+    }
+    .topbar-inner {
+      max-width: 1380px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand-stamp {
+      font: 700 12px/1.15 var(--mono);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 2px solid var(--accent);
+      padding: 7px 10px;
+      border-radius: 3px;
+      transform: rotate(-2.5deg);
+      background: var(--card);
+      flex-shrink: 0;
+    }
+    .brand-title h1 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 26px;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+    .brand-title h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .brand-title p {
+      font: 500 11.5px/1.3 var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .progress-cluster {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card);
+      border: 1px solid var(--ink);
+      border-radius: 4px;
+      padding: 7px 12px;
+      min-width: 260px;
+    }
+    .progress-label-k {
+      font: 600 11px/1 var(--mono);
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .progress-track {
+      flex: 1;
+      height: 7px;
+      background: var(--paper2);
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--real);
+      transition: width 0.4s var(--ease);
+    }
+    .progress-num {
+      font: 700 12px/1 var(--mono);
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    /* Buttons */
+    .btn {
+      font: 600 12.5px/1 var(--mono);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 9px 14px;
+      border: 1.5px solid var(--ink);
+      border-radius: 4px;
+      background: var(--card);
+      color: var(--ink);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.14s var(--ease), background 0.14s, color 0.14s;
+    }
+    .btn:hover:not(:disabled) {
+      background: var(--paper2);
+      transform: translateY(-1px);
+    }
+    .btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .btn-accent {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .btn-accent:hover:not(:disabled) {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .btn-danger {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--card);
+    }
+    .btn-danger:hover:not(:disabled) {
+      background: var(--accent-t);
+    }
+
+    /* =========================================================================
+       LAYOUT & NAVIGATION
+       ========================================================================= */
+    .container {
+      max-width: 1380px;
+      margin: 24px auto 0;
+      padding: 0 24px;
+    }
+
+    .section-header-line {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font: 500 11.5px/1 var(--mono);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .section-header-line .case { color: var(--ink); font-weight: 600; }
+    .section-header-line .line { flex: 1; height: 1px; background: var(--rule); }
+    .section-header-line .kick { color: var(--accent); font-weight: 600; }
+
+    .nav-tabs {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 1100px) {
+      .nav-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .nav-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .nav-tab {
+      text-align: left;
+      padding: 11px 13px;
+      border: 1px solid var(--rule);
+      border-bottom: 2px solid var(--ink);
+      border-radius: 4px;
+      background: var(--paper2);
+      color: var(--ink2);
+      cursor: pointer;
+      transition: all 0.18s var(--ease);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav-tab small {
+      font: 600 10.5px/1 var(--mono);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .nav-tab span {
+      font-size: 13.5px;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+    .nav-tab:hover {
+      background: var(--card);
+      border-color: var(--ink);
+    }
+    .nav-tab.active {
+      background: var(--card);
+      border: 1.5px solid var(--ink);
+      border-bottom: 4px solid var(--accent);
+      color: var(--ink);
+    }
+    .nav-tab.active small { color: var(--accent); }
+
+    .tab-panel { display: none; animation: panelIn 0.25s var(--ease); }
+    .tab-panel.active { display: block; }
+    @keyframes panelIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    /* Grids & Cards */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+    .wiring-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(340px, 1fr); gap: 20px; align-items: start; }
+    @media (max-width: 1080px) {
+      .grid-2, .wiring-layout { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1.5px solid var(--ink);
+      border-radius: 5px;
+      padding: 20px 22px;
+    }
+    .card-kicker {
+      font: 600 11px/1 var(--mono);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .card-serif-title {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 30px;
+      line-height: 1.08;
+      letter-spacing: -0.015em;
+    }
+    .card-serif-title em { font-style: italic; color: var(--accent); }
+
+    /* Exhibit Box (from architecture.html) */
+    .exhibit {
+      position: relative;
+      background: var(--card);
+      border: 1.5px solid var(--ink);
+      padding: 14px;
+      border-radius: 4px;
+    }
+    .exhibit .cap {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px 16px;
+      font: 500 11.5px/1.35 var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .exhibit .cap b { color: var(--ink); font-weight: 700; }
+    .crop {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--ink);
+      pointer-events: none;
+    }
+    .crop.tl { left: -6px; top: -6px; border-right: 0; border-bottom: 0; }
+    .crop.tr { right: -6px; top: -6px; border-left: 0; border-bottom: 0; }
+    .crop.bl { left: -6px; bottom: -6px; border-right: 0; border-top: 0; }
+    .crop.br { right: -6px; bottom: -6px; border-left: 0; border-top: 0; }
+
+    /* Tags & Badges */
+    .tag {
+      display: inline-block;
+      font: 600 11px/1 var(--mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 8px;
+      border: 1px solid currentColor;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+    .tag-5v { color: var(--accent); background: var(--accent-t); }
+    .tag-3v3 { color: var(--amber); background: var(--amber-t); }
+    .tag-ok { color: var(--real); background: var(--real-t); }
+    .tag-blue { color: var(--link); background: var(--link-t); }
+    .tag-ink { color: var(--ink); background: var(--paper2); }
+
+    /* Callouts */
+    .note-box {
+      padding: 13px 16px;
+      border-radius: 4px;
+      border: 1px solid var(--rule);
+      border-left: 4px solid var(--ink);
+      background: var(--paper);
+      font-size: 13.5px;
+      line-height: 1.5;
+      margin: 12px 0;
+    }
+    .note-box.danger {
+      border-color: rgba(214, 60, 28, 0.35);
+      border-left-color: var(--accent);
+      background: var(--accent-t);
+    }
+    .note-box.warn {
+      border-color: rgba(201, 138, 18, 0.4);
+      border-left-color: var(--amber);
+      background: var(--amber-t);
+    }
+    .note-box.ok {
+      border-color: rgba(46, 122, 78, 0.35);
+      border-left-color: var(--real);
+      background: var(--real-t);
+    }
+    .note-box b.title {
+      display: block;
+      font: 700 11.5px/1.2 var(--mono);
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      color: var(--ink);
+    }
+    .note-box.danger b.title { color: var(--accent); }
+    .note-box.ok b.title { color: var(--real); }
+    .note-box ul { padding-left: 18px; margin-top: 4px; }
+
+    /* =========================================================================
+       TAB 1: INTERACTIVE WIRING EXPLORER
+       ========================================================================= */
+    .node-switch {
+      display: inline-flex;
+      border: 1.5px solid var(--ink);
+      border-radius: 4px;
+      overflow: hidden;
+      background: var(--paper2);
+    }
+    .node-btn {
+      border: none;
+      background: transparent;
+      color: var(--ink2);
+      padding: 9px 15px;
+      font: 600 12.5px/1 var(--mono);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .node-btn + .node-btn { border-left: 1.5px solid var(--ink); }
+    .node-btn.active {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .filter-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 14px 0 18px;
+    }
+    .chip {
+      font: 600 12px/1 var(--mono);
+      padding: 7px 11px;
+      border: 1px solid var(--ink);
+      border-radius: 3px;
+      background: var(--paper);
+      color: var(--ink2);
+      cursor: pointer;
+      transition: all 0.14s;
+    }
+    .chip:hover { background: var(--paper2); color: var(--ink); }
+    .chip.active {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .svg-frame {
+      width: 100%;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .svg-frame svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      user-select: none;
+    }
+
+    .wire {
+      fill: none;
+      stroke-width: 2.3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: opacity 0.2s ease, stroke-width 0.2s ease;
+    }
+    .wire.dimmed { opacity: 0.13; }
+    .wire.highlighted {
+      stroke-width: 3.8;
+      stroke-dasharray: 8 5;
+      animation: flowDash 0.85s linear infinite;
+    }
+    @keyframes flowDash {
+      to { stroke-dashoffset: -26; }
+    }
+
+    .mod-box { cursor: pointer; transition: opacity 0.2s ease; }
+    .mod-box rect.mod-frame { transition: stroke 0.15s, stroke-width 0.15s, fill 0.15s; }
+    .mod-box:hover rect.mod-frame { stroke: var(--accent); stroke-width: 2.4; fill: #fffdf8; }
+    .mod-box.dimmed { opacity: 0.28; }
+    .mod-box.selected rect.mod-frame {
+      stroke: var(--accent);
+      stroke-width: 2.6;
+      fill: #fff6f2;
+    }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td {
+      padding: 9px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--rule);
+      vertical-align: top;
+    }
+    th {
+      font: 600 10.5px/1.2 var(--mono);
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1.5px solid var(--ink);
+      background: var(--paper);
+    }
+    tr.bom-row { cursor: pointer; transition: background 0.12s; }
+    tr.bom-row:hover { background: var(--paper); }
+    tr.bom-row.checked td { opacity: 0.55; }
+    tr.bom-row.checked td.bom-name { text-decoration: line-through; }
+
+    .chk {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--real);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* =========================================================================
+       TAB 2: METRO STEP RAIL (FROM ARCHITECTURE.HTML) + WIZARD
+       ========================================================================= */
+    .metro-wrap {
+      background: var(--card);
+      border: 1.5px solid var(--ink);
+      border-radius: 5px;
+      padding: 20px 26px 18px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+    .metro-rail {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(8, minmax(92px, 1fr));
+      gap: 8px;
+      min-width: 760px;
+    }
+    .metro-rail::before {
+      content: "";
+      position: absolute;
+      left: 6%;
+      right: 6%;
+      top: 13px;
+      height: 3px;
+      background: var(--rule);
+      z-index: 0;
+    }
+    .metro-step {
+      position: relative;
+      z-index: 1;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+      padding: 0 4px;
+    }
+    .metro-dot {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--paper);
+      border: 2.5px solid var(--rule);
+      font: 700 11px/1 var(--mono);
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      transition: all 0.2s var(--ease);
+    }
+    .metro-step.done .metro-dot {
+      border-color: var(--real);
+      background: var(--real);
+      color: #fff;
+    }
+    .metro-step.active .metro-dot {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+      transform: scale(1.16);
+      box-shadow: 0 0 0 4px var(--accent-t);
+    }
+    .metro-label {
+      font: 600 11px/1.25 var(--mono);
+      letter-spacing: 0.03em;
+      color: var(--muted);
+    }
+    .metro-step.done .metro-label { color: var(--real); }
+    .metro-step.active .metro-label { color: var(--accent); font-weight: 700; }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      background: var(--paper);
+      margin-bottom: 9px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .checklist-item:hover { border-color: var(--ink); background: #fff; }
+    .checklist-item.done {
+      border-color: rgba(46, 122, 78, 0.45);
+      background: var(--real-t);
+    }
+    .checklist-item input { margin-top: 3px; }
+
+    /* =========================================================================
+       TAB 4: SIMULATOR & STAMP VERDICT
+       ========================================================================= */
+    .sim-control {
+      padding: 12px 14px;
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      background: var(--paper);
+      margin-bottom: 12px;
+    }
+    .sim-control label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 7px;
+      flex-wrap: wrap;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .led-orb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1.5px solid var(--ink);
+      display: inline-block;
+      transition: all 0.2s ease;
+    }
+    @keyframes blinkAway {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.25; transform: scale(0.9); }
+    }
+    .blink-away { animation: blinkAway 0.9s infinite; }
+
+    .verdict-stamp {
+      display: inline-block;
+      font: 700 18px/1 var(--mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 8px 13px;
+      border: 3px solid currentColor;
+      outline: 1.5px solid currentColor;
+      outline-offset: 3px;
+      border-radius: 4px;
+      transform: rotate(-2deg);
+    }
+
+    /* Terminal Code Block (dark ink panel like architecture.html #s-extend pre) */
+    pre.ink-code {
+      background: var(--ink);
+      color: #e4ded2;
+      border: 1.5px solid var(--ink);
+      border-radius: 5px;
+      padding: 18px 20px;
+      font: 500 12.5px/1.6 var(--mono);
+      overflow-x: auto;
+      max-height: 490px;
+    }
+  </style>
+</head>
+<body>
+  <div id="topProgressLine"></div>
+
+  <!-- HEADER -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-stamp">IT4735<br/>NHÓM 3</div>
+        <div class="brand-title">
+          <h1>Hướng dẫn <em>lắp ráp</em> hệ thống Thư viện Thông minh</h1>
+          <p>ĐHBK Hà Nội · 01 Bàn 02 Chỗ (Seat + Zone Node) &amp; 01 Cổng RFID (Gate Node)</p>
+        </div>
+      </div>
+
+      <div class="progress-cluster" title="Tổng tiến độ hoàn thành checklist lắp ráp & kiểm kê vật tư">
+        <span class="progress-label-k">Tiến độ</span>
+        <div class="progress-track">
+          <div class="progress-fill" id="globalProgressBar"></div>
+        </div>
+        <span class="progress-num" id="globalProgressText">0% (0/0)</span>
+      </div>
+
+      <button class="btn btn-danger" onclick="resetAllProgress()">↺ Reset tiến độ</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="section-header-line">
+      <span class="case">BTL MÔN IOT &amp; ỨNG DỤNG</span>
+      <span class="line"></span>
+      <span class="kick">SỔ TAY THI CÔNG PHẦN CỨNG · VER 2.0</span>
+    </div>
+
+    <!-- NAVIGATION TABS -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('wiring', this)">
+        <small>01 · Schematic</small>
+        <span>🔌 Sơ đồ đấu nối tương tác</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('steps', this)">
+        <small>02 · Assembly</small>
+        <span>🛠️ Quy trình lắp 8 bước</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('mechanical', this)">
+        <small>03 · Blueprint</small>
+        <span>📐 Bố trí Sa bàn bàn học</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('simulator', this)">
+        <small>04 · Fusion Lab</small>
+        <span>🧪 Giả lập cảm biến &amp; LED</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('bom', this)">
+        <small>05 · Inventory</small>
+        <span>📦 Kiểm kê vật tư (BOM)</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('code', this)">
+        <small>06 · Bring-up</small>
+        <span>💻 Code test mạch nhanh</span>
+      </button>
+    </nav>
+
+    <!-- =======================================================================
+         TAB 1: INTERACTIVE WIRING EXPLORER
+         ======================================================================= -->
+    <section id="tab-wiring" class="tab-panel active">
+      <div class="card" style="margin-bottom: 20px;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:16px;">
+          <div>
+            <div class="card-kicker">Interactive Pinout Map · ESP32-S3 (An toàn PSRAM/Flash &amp; ADC1)</div>
+            <h2 class="card-serif-title">Sơ đồ chân đấu nối <em>ESP32-S3 DevKitC-1</em></h2>
+            <p style="font-size:13.5px; color:var(--ink2); margin-top:6px; max-width:720px;">
+              Bấm trực tiếp vào <strong>từng khối linh kiện trên bản vẽ</strong> hoặc chọn bộ lọc phía dưới. Sơ đồ đã tránh toàn bộ chân <strong>PSRAM/Flash (GPIO 26–37)</strong>, chân <strong>USB OTG (GPIO 19–20)</strong> và dùng thuần <strong>ADC1 (GPIO 4–5)</strong>.
+            </p>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+            <div class="node-switch">
+              <button class="node-btn active" id="btnModeSch" onclick="setDiagramMode('schematic')">📐 Sơ đồ khối</button>
+              <button class="node-btn" id="btnModeBB" onclick="setDiagramMode('breadboard')">🧩 Cắm Breadboard</button>
+            </div>
+            <div class="node-switch">
+              <button class="node-btn active" id="btnNode1" onclick="selectNode('node1')">ESP32-S3 #1 · Seat + Zone</button>
+              <button class="node-btn" id="btnNode2" onclick="selectNode('node2')">ESP32-S3 #2 · Gate RFID</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-chips" id="wireFilters"></div>
+
+        <div class="wiring-layout">
+          <div>
+            <div class="exhibit">
+              <span class="crop tl"></span><span class="crop tr"></span><span class="crop bl"></span><span class="crop br"></span>
+              <div class="svg-frame" id="svgContainer"></div>
+              <div class="cap">
+                <span><b id="exhibitNodeName">ESP32-S3 #1 — Bàn 02 chỗ &amp; Môi trường</b></span>
+                <span>🔴 5V · 🟠 3.3V · ⚫ GND · 🔵 UART/SPI · 🟢 I2C/LED · 🟣 ADC1/I2S</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="background: var(--paper);" id="inspectorPanel"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         TAB 2: 8-STEP ASSEMBLY WIZARD (METRO RAIL)
+         ======================================================================= -->
+    <section id="tab-steps" class="tab-panel">
+      <div class="metro-wrap">
+        <div class="metro-rail" id="metroRail"></div>
+      </div>
+      <div class="card" id="stepContent"></div>
+    </section>
+
+    <!-- =======================================================================
+         TAB 3: MECHANICAL & SA BAN BLUEPRINT
+         ======================================================================= -->
+    <section id="tab-mechanical" class="tab-panel">
+      <div class="grid-2">
+        <div class="exhibit">
+          <span class="crop tl"></span><span class="crop tr"></span><span class="crop bl"></span><span class="crop br"></span>
+          <div class="svg-frame">
+            <svg viewBox="0 0 820 490" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="mechGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e4ddd0" stroke-width="1"/>
+                </pattern>
+                <radialGradient id="coneGrad" cx="50%" cy="0%" r="100%">
+                  <stop offset="0%" stop-color="#2853c9" stop-opacity="0.24"/>
+                  <stop offset="100%" stop-color="#2853c9" stop-opacity="0.03"/>
+                </radialGradient>
+              </defs>
+              <rect width="820" height="490" fill="url(#mechGrid)"/>
+
+              <!-- Floor -->
+              <line x1="35" y1="435" x2="785" y2="435" stroke="#17160f" stroke-width="2.5"/>
+              <text x="45" y="458" fill="#7a756b" font-size="11.5" font-family="JetBrains Mono, monospace">MẶT SÀN PHÒNG ĐỌC / ĐẾ SA BÀN GỖ - MICA</text>
+
+              <!-- Zone Node Module on top divider -->
+              <rect x="330" y="64" width="160" height="46" rx="4" fill="#fbf9f4" stroke="#17160f" stroke-width="1.8"/>
+              <text x="410" y="83" fill="#d63c1c" font-size="11" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">CỤM MÔI TRƯỜNG</text>
+              <text x="410" y="100" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace" text-anchor="middle">SHT31 · BH1750 · INMP441</text>
+              <!-- Stem connecting Zone Node to desk -->
+              <line x1="410" y1="110" x2="410" y2="140" stroke="#17160f" stroke-width="2"/>
+
+              <!-- Desk Top -->
+              <rect x="65" y="140" width="690" height="24" rx="3" fill="#e8e1d3" stroke="#17160f" stroke-width="2"/>
+              <text x="410" y="156" fill="#17160f" font-size="12" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">MẶT BÀN HỌC ĐÔI (01 BÀN · 02 CHỖ NGỒI)</text>
+
+              <!-- Desk Legs -->
+              <rect x="85" y="164" width="16" height="271" fill="#d3ccbe" stroke="#17160f" stroke-width="1.5"/>
+              <rect x="719" y="164" width="16" height="271" fill="#d3ccbe" stroke="#17160f" stroke-width="1.5"/>
+
+              <!-- Central ESP32-S3 Box under desk -->
+              <rect x="336" y="164" width="148" height="42" rx="4" fill="#17160f"/>
+              <text x="410" y="182" fill="#fbf9f4" font-size="11" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">HỘP ESP32-S3 #1</text>
+              <text x="410" y="197" fill="#a8a296" font-size="10" font-family="JetBrains Mono, monospace" text-anchor="middle">Seat + Zone (5V/2A)</text>
+
+              <!-- SEAT 1 (LEFT, center x=205) -->
+              <rect x="132" y="124" width="54" height="16" rx="2" fill="#fbf9f4" stroke="#17160f" stroke-width="1.4"/>
+              <text x="159" y="135" fill="#17160f" font-size="9.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">QR S01</text>
+              <rect x="196" y="128" width="68" height="12" rx="2" fill="#2e7a4e" stroke="#17160f" stroke-width="1.3"/>
+              <text x="230" y="118" fill="#2e7a4e" font-size="10" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">WS2812B #1</text>
+
+              <!-- Radar 1 under desk -->
+              <rect x="172" y="164" width="66" height="22" rx="3" fill="#2853c9" stroke="#17160f" stroke-width="1.5"/>
+              <text x="205" y="179" fill="#fff" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">LD2410C</text>
+
+              <!-- Radar 1 Cone -->
+              <polygon points="205,186 118,385 292,385" fill="url(#coneGrad)" stroke="#2853c9" stroke-width="1.2" stroke-dasharray="5 4"/>
+              <rect x="151" y="256" width="108" height="20" rx="3" fill="#fbf9f4" stroke="#2853c9" stroke-width="1"/>
+              <text x="205" y="270" fill="#2853c9" font-size="10" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">Gate ≤ 0.75 m</text>
+
+              <!-- Chair 1 -->
+              <rect x="145" y="334" width="120" height="14" rx="3" fill="#7a756b" stroke="#17160f" stroke-width="1.5"/>
+              <rect x="166" y="324" width="78" height="10" rx="2" fill="#d63c1c" stroke="#17160f" stroke-width="1.3"/>
+              <text x="205" y="316" fill="#d63c1c" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">FSR402 #1 (đệm)</text>
+              <rect x="155" y="348" width="10" height="87" fill="#a8a296" stroke="#17160f" stroke-width="1.2"/>
+              <rect x="245" y="348" width="10" height="87" fill="#a8a296" stroke="#17160f" stroke-width="1.2"/>
+              <rect x="145" y="270" width="12" height="78" rx="3" fill="#7a756b" stroke="#17160f" stroke-width="1.5"/>
+              <text x="205" y="422" fill="#17160f" font-size="11.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">CHỖ NGỒI S01</text>
+
+              <!-- SEAT 2 (RIGHT, center x=615) -->
+              <rect x="542" y="124" width="54" height="16" rx="2" fill="#fbf9f4" stroke="#17160f" stroke-width="1.4"/>
+              <text x="569" y="135" fill="#17160f" font-size="9.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">QR S02</text>
+              <rect x="606" y="128" width="68" height="12" rx="2" fill="#d63c1c" stroke="#17160f" stroke-width="1.3"/>
+              <text x="640" y="118" fill="#d63c1c" font-size="10" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">WS2812B #2</text>
+
+              <!-- Radar 2 under desk -->
+              <rect x="582" y="164" width="66" height="22" rx="3" fill="#2853c9" stroke="#17160f" stroke-width="1.5"/>
+              <text x="615" y="179" fill="#fff" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">LD2410C</text>
+
+              <!-- Radar 2 Cone -->
+              <polygon points="615,186 528,385 702,385" fill="url(#coneGrad)" stroke="#2853c9" stroke-width="1.2" stroke-dasharray="5 4"/>
+              <rect x="561" y="256" width="108" height="20" rx="3" fill="#fbf9f4" stroke="#2853c9" stroke-width="1"/>
+              <text x="615" y="270" fill="#2853c9" font-size="10" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">Gate ≤ 0.75 m</text>
+
+              <!-- Chair 2 -->
+              <rect x="555" y="334" width="120" height="14" rx="3" fill="#7a756b" stroke="#17160f" stroke-width="1.5"/>
+              <rect x="576" y="324" width="78" height="10" rx="2" fill="#d63c1c" stroke="#17160f" stroke-width="1.3"/>
+              <text x="615" y="316" fill="#d63c1c" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">FSR402 #2 (đệm)</text>
+              <rect x="565" y="348" width="10" height="87" fill="#a8a296" stroke="#17160f" stroke-width="1.2"/>
+              <rect x="655" y="348" width="10" height="87" fill="#a8a296" stroke="#17160f" stroke-width="1.2"/>
+              <rect x="663" y="270" width="12" height="78" rx="3" fill="#7a756b" stroke="#17160f" stroke-width="1.5"/>
+              <text x="615" y="422" fill="#17160f" font-size="11.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">CHỖ NGỒI S02</text>
+
+              <!-- Radar Spacing Dimension Line (Cleanly positioned at y=228, well below ESP32 box at y=206!) -->
+              <line x1="238" y1="186" x2="238" y2="238" stroke="#c98a12" stroke-width="1.3" stroke-dasharray="3 3"/>
+              <line x1="582" y1="186" x2="582" y2="238" stroke="#c98a12" stroke-width="1.3" stroke-dasharray="3 3"/>
+              <line x1="240" y1="228" x2="580" y2="228" stroke="#c98a12" stroke-width="2"/>
+              <polygon points="238,228 248,223 248,233" fill="#c98a12"/>
+              <polygon points="582,228 572,223 572,233" fill="#c98a12"/>
+              <rect x="336" y="216" width="148" height="24" rx="3" fill="#fbf9f4" stroke="#c98a12" stroke-width="1.5"/>
+              <text x="410" y="232" fill="#17160f" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">Cách nhau ≥ 60 cm</text>
+            </svg>
+          </div>
+          <div class="cap">
+            <span><b>Hình 4.1 · Mặt cắt sa bàn</b></span>
+            <span>Ràng buộc chống nhiễu chéo &amp; giữ chỗ ảo</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-kicker">Mechanical &amp; Calibration Rules</div>
+          <h2 class="card-serif-title" style="margin-bottom:12px;">Quy tắc <em>cơ khí</em> &amp; hiệu chỉnh thực tế</h2>
+
+          <div class="note-box warn">
+            <b class="title">1. Góc &amp; Gate Radar HLK-LD2410C (Chống nhận nhầm TC03)</b>
+            Gắn dưới gầm bàn, mặt anten patch hướng chếch xuống ngực/bụng người ngồi (~35°). Dùng app <em>HLKRadarTool</em> (Bluetooth) cài <code>Max Distance Gate = Gate 1 (0.75 m)</code> và hạ độ nhạy các gate xa về 0. Khoảng cách 2 radar <strong>≥ 60 cm</strong> (nếu làm sa bàn thu nhỏ, lót vách lá đồng/giấy bạc chắn sóng giữa 2 khoang).
+          </div>
+
+          <div class="note-box">
+            <b class="title">2. Cách lót Cảm biến lực FSR402 dưới đệm ghế (TC02)</b>
+            Không dán FSR402 lên bề mặt gồ ghề hay gập cổ cáp! Dán mặt cảm biến lên tấm lót phẳng, đặt 1 miếng <strong>mút EVA / cao su tròn đường kính ~1.5 cm</strong> ngay tâm vùng tròn rồi mới phủ đệm mỏng lên trên để tập trung trọng lực balo/người ngồi.
+          </div>
+
+          <div class="note-box ok">
+            <b class="title">3. Vị trí Cụm Môi trường (Zone Node)</b>
+            <ul>
+              <li><strong>BH1750:</strong> Đặt ngửa hướng lên trần đèn (không giấu dưới gầm bàn vì ngưỡng cảnh báo là <code>&lt; 300 lux</code> tại mặt bàn đọc).</li>
+              <li><strong>INMP441:</strong> Khoan lỗ thoáng Ø 3 mm đúng vị trí lỗ thu âm trên nắp hộp để đo chính xác mức dB (cảnh báo <code>&gt; 55 dB</code>).</li>
+              <li><strong>SHT31:</strong> Đặt cách chip ESP32 tối thiểu 4 cm để tránh sai số +2°C do nhiệt tỏa từ Wi-Fi.</li>
+            </ul>
+          </div>
+
+          <div class="note-box danger">
+            <b class="title">4. Cổng Ra Vào RFID RC522 (Gate Node)</b>
+            Không gắn sát RC522 lên bề mặt kim loại (nhôm/sắt sẽ triệt tiêu từ trường 13.56 MHz). Chỉ gắn sau tấm <strong>Mica hoặc Gỗ</strong> dày ≤ 5 mm.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         TAB 4: SENSOR FUSION & LED SIMULATOR
+         ======================================================================= -->
+    <section id="tab-simulator" class="tab-panel">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-kicker">Bảng 4.1 · Sensor Fusion Engine</div>
+          <h2 class="card-serif-title" style="margin-bottom:8px;">Phòng giả lập <em>cảm biến &amp; LED</em></h2>
+          <p style="font-size:13.5px; color:var(--ink2); margin-bottom:16px;">
+            Kéo thanh trượt để kiểm chứng thuật toán hợp nhất Radar + FSR402, phát hiện giữ chỗ ảo bằng đồ vật và bản tin MQTT sinh ra.
+          </p>
+
+          <div class="sim-control">
+            <label>
+              <span>🪑 Áp lực ghế FSR402 (ADC 12-bit · Ngưỡng ≥ 800)</span>
+              <span id="simFsrVal" class="mono" style="color:var(--accent);">1850 (CÓ LỰC ÉP)</span>
+            </label>
+            <input type="range" id="simFsr" min="0" max="4095" value="1850" oninput="updateSim()" />
+          </div>
+
+          <div class="sim-control">
+            <label>
+              <span>📡 Khoảng cách Radar LD2410C (Gate hợp lệ ≤ 75 cm)</span>
+              <span id="simDistVal" class="mono" style="color:var(--accent);">48 cm</span>
+            </label>
+            <input type="range" id="simDist" min="15" max="150" value="48" oninput="updateSim()" />
+          </div>
+
+          <div class="sim-control">
+            <label>
+              <span>💓 Năng lượng Tĩnh / Hô hấp (Still Energy ≥ 25)</span>
+              <span id="simEnergyVal" class="mono" style="color:var(--accent);">61</span>
+            </label>
+            <input type="range" id="simEnergy" min="0" max="100" value="61" oninput="updateSim()" />
+          </div>
+
+          <div style="margin-bottom:14px;">
+            <div style="font:600 11px/1 var(--mono); letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:8px;">⚡ Kịch bản kiểm thử mẫu (Mục 9):</div>
+            <div style="display:flex; flex-wrap:wrap; gap:7px;">
+              <button class="btn" onclick="applyPreset('free')">🟢 Ghế trống</button>
+              <button class="btn" onclick="applyPreset('sit')">🔴 TC01: Ngồi yên</button>
+              <button class="btn" onclick="applyPreset('bag')">🎒 TC02: Balo giữ chỗ</button>
+              <button class="btn" onclick="applyPreset('neighbor')">🚶 TC03: Bàn bên (1m)</button>
+            </div>
+          </div>
+
+          <div>
+            <div style="font:600 11px/1 var(--mono); letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:8px;">🔄 Trạng thái từ Seat Engine (Server):</div>
+            <div style="display:flex; flex-wrap:wrap; gap:7px;">
+              <button class="btn" onclick="setServerState('FREE')">FREE</button>
+              <button class="btn" onclick="setServerState('RESERVED')">RESERVED</button>
+              <button class="btn" onclick="setServerState('OCCUPIED')">OCCUPIED</button>
+              <button class="btn" onclick="setServerState('AWAY')">AWAY</button>
+              <button class="btn" onclick="setServerState('DISABLED')">DISABLED</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+            <div>
+              <div class="card-kicker">Live Telemetry Output</div>
+              <div class="verdict-stamp" id="simFusionStamp">PRESENT</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; background:var(--paper); border:1px solid var(--ink); padding:8px 12px; border-radius:4px;">
+              <span class="mono" style="font-size:11.5px; font-weight:700;">LED WS2812B</span>
+              <span class="led-orb" id="simLedOrb"></span>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+            <div style="padding:12px; border:1px solid var(--rule); border-radius:4px; background:var(--paper);">
+              <div class="mono" style="font-size:10.5px; color:var(--muted); text-transform:uppercase;">Kết luận cảm biến</div>
+              <div id="simFusionDesc" style="font-size:13.5px; font-weight:600; margin-top:5px;">Có người đang ngồi</div>
+            </div>
+            <div style="padding:12px; border:1px solid var(--rule); border-radius:4px; background:var(--paper);">
+              <div class="mono" style="font-size:10.5px; color:var(--muted); text-transform:uppercase;">Trạng thái &amp; Đèn bàn</div>
+              <div id="simSeatState" style="font-size:13.5px; font-weight:700; margin-top:5px;">OCCUPIED — Đỏ</div>
+              <div id="simActionHint" style="font-size:12px; color:var(--ink2); margin-top:2px;">Đang sử dụng hợp lệ</div>
+            </div>
+          </div>
+
+          <div class="mono" style="font-size:11.5px; font-weight:600; color:var(--muted); margin-bottom:6px;">
+            MQTT PUBLISH · <code>lib/A2/T05/S01/state</code> (QoS 1):
+          </div>
+          <pre class="ink-code" id="simMqttJson" style="margin-bottom:12px;"></pre>
+
+          <div class="note-box" style="margin:0;">
+            <b class="title">Bộ đếm ổn định 10 giây (Anti-bounce)</b>
+            Seat Node lấy mẫu mỗi <code>200 ms</code> (lọc trung vị 5 mẫu FSR), nhưng chỉ gửi bản tin đổi trạng thái khi kết luận giữ nguyên liên tục <strong>≥ 10 s</strong> để cử động ngắn (cúi nhặt bút, vươn vai) không gây báo vắng giả.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         TAB 5: INVENTORY / BOM
+         ======================================================================= -->
+    <section id="tab-bom" class="tab-panel">
+      <div class="card">
+        <div class="card-kicker">Bảng 6.1 · Dự toán mô hình 1.005.000 VNĐ</div>
+        <h2 class="card-serif-title" style="margin-bottom:6px;">Danh mục <em>vật tư</em> &amp; kiểm tra mức nguồn</h2>
+        <p style="font-size:13.5px; color:var(--ink2); margin-bottom:16px;">
+          Tick vào từng dòng khi nhóm đã mua đủ và kiểm tra ngoại quan linh kiện. Đặc biệt chú ý cột <strong>Mức nguồn</strong> trước khi cấp điện!
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:50px;">Có</th>
+                <th style="width:45px;">STT</th>
+                <th>Linh kiện / Vật tư</th>
+                <th>SL</th>
+                <th>Mức nguồn</th>
+                <th>Thuộc Node</th>
+                <th>Lưu ý sống còn khi đấu nối</th>
+              </tr>
+            </thead>
+            <tbody id="bomTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         TAB 6: CODE BRING-UP TEST
+         ======================================================================= -->
+    <section id="tab-code" class="tab-panel">
+      <div class="grid-2">
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px;">
+            <div>
+              <div class="card-kicker">Sketch 01 · Seat + Zone Node (ESP32-S3)</div>
+              <h3 style="font-family:var(--serif); font-size:24px; font-weight:400;">Test ESP32-S3 #1 (Bàn 2 chỗ + Môi trường)</h3>
+            </div>
+            <button class="btn btn-accent" onclick="copyCode('codeNode1', this)">📋 Copy</button>
+          </div>
+          <p style="font-size:13px; color:var(--ink2); margin-bottom:12px;">
+            Đọc đồng thời 2 FSR402 (<code>GPIO 4/5</code> ADC1), 2 Radar UART 256000 baud (<code>GPIO 17/18</code> &amp; <code>15/16</code>), quét I2C (<code>GPIO 8/9</code>: <code>SHT31 0x44</code> &amp; <code>BH1750 0x23</code>) và test đổi màu LED WS2812B (<code>GPIO 6/7</code>).
+          </p>
+          <pre class="ink-code"><code id="codeNode1">#include &lt;Arduino.h&gt;
+#include &lt;Wire.h&gt;
+#include &lt;Adafruit_NeoPixel.h&gt;
+
+// ==== CHÂN CHUẨN ESP32-S3 (TRÁNH PSRAM 26-37 &amp; USB 19-20) ====
+#define FSR1_PIN      4    // ADC1_CH3 (Ghế S01)
+#define FSR2_PIN      5    // ADC1_CH4 (Ghế S02)
+#define RADAR1_RX     17   // Nối vào TX của LD2410C #1
+#define RADAR1_TX     18   // Nối vào RX của LD2410C #1
+#define RADAR2_RX     15   // Nối vào TX của LD2410C #2
+#define RADAR2_TX     16   // Nối vào RX của LD2410C #2
+#define LED1_PIN      6    // Dải WS2812B #1 (qua trở 330 ohm)
+#define LED2_PIN      7    // Dải WS2812B #2 (qua trở 330 ohm)
+#define I2C_SDA       8
+#define I2C_SCL       9
+
+Adafruit_NeoPixel ledS01(8, LED1_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel ledS02(8, LED2_PIN, NEO_GRB + NEO_KHZ800);
+
+void scanI2C() {
+  Serial.println("[I2C] Quet thiet bi tren GPIO 8/9...");
+  for (byte addr = 1; addr &lt; 127; addr++) {
+    Wire.beginTransmission(addr);
+    if (Wire.endTransmission() == 0) {
+      Serial.printf("  -&gt; 0x%02X ", addr);
+      if (addr == 0x44 || addr == 0x45) Serial.println("(SHT31 OK)");
+      else if (addr == 0x23 || addr == 0x5C) Serial.println("(BH1750 OK)");
+      else Serial.println();
+    }
+  }
+}
+
+void setStripColor(Adafruit_NeoPixel &amp;strip, uint32_t color) {
+  for (int i = 0; i &lt; strip.numPixels(); i++) strip.setPixelColor(i, color);
+  strip.show();
+}
+
+void setup() {
+  Serial.begin(115200); // Cắm cáp vào cổng UART (hoặc bật USB CDC On Boot nếu cắm cổng USB)
+  delay(800);
+  analogReadResolution(12);
+  Wire.begin(I2C_SDA, I2C_SCL);
+  scanI2C();
+
+  Serial2.begin(256000, SERIAL_8N1, RADAR1_RX, RADAR1_TX);
+  Serial1.begin(256000, SERIAL_8N1, RADAR2_RX, RADAR2_TX);
+
+  ledS01.begin(); ledS01.setBrightness(60);
+  ledS02.begin(); ledS02.setBrightness(60);
+}
+
+void loop() {
+  int fsr1 = analogRead(FSR1_PIN);
+  int fsr2 = analogRead(FSR2_PIN);
+  int r1Bytes = Serial2.available();
+  int r2Bytes = Serial1.available();
+
+  setStripColor(ledS01, fsr1 &gt; 800 ? ledS01.Color(214, 60, 28) : ledS01.Color(46, 122, 78));
+  setStripColor(ledS02, fsr2 &gt; 800 ? ledS02.Color(214, 60, 28) : ledS02.Color(46, 122, 78));
+
+  Serial.printf("[S01] FSR=%4d | R1_Bytes=%3d  ||  [S02] FSR=%4d | R2_Bytes=%3d\n",
+                fsr1, r1Bytes, fsr2, r2Bytes);
+
+  while (Serial2.available()) Serial2.read();
+  while (Serial1.available()) Serial1.read();
+  delay(500);
+}</code></pre>
+        </div>
+
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px;">
+            <div>
+              <div class="card-kicker">Sketch 02 · Gate Node (ESP32-S3)</div>
+              <h3 style="font-family:var(--serif); font-size:24px; font-weight:400;">Test ESP32-S3 #2 (RFID RC522 + OLED)</h3>
+            </div>
+            <button class="btn btn-accent" onclick="copyCode('codeNode2', this)">📋 Copy</button>
+          </div>
+          <p style="font-size:13px; color:var(--ink2); margin-bottom:12px;">
+            Kiểm tra giao tiếp FSPI của RC522 (3.3V, <code>GPIO 10..14</code>), OLED SSD1306 (<code>GPIO 8/9</code>, <code>0x3C</code>), Buzzer và nút chuyển chiều VÀO / RA.
+          </p>
+          <pre class="ink-code"><code id="codeNode2">#include &lt;Arduino.h&gt;
+#include &lt;SPI.h&gt;
+#include &lt;Wire.h&gt;
+#include &lt;MFRC522.h&gt;
+#include &lt;Adafruit_GFX.h&gt;
+#include &lt;Adafruit_SSD1306.h&gt;
+
+// ==== CHÂN CHUẨN ESP32-S3 FSPI + I2C ====
+#define RC522_SS      10
+#define RC522_MOSI    11
+#define RC522_SCK     12
+#define RC522_MISO    13
+#define RC522_RST     14
+
+#define I2C_SDA       8
+#define I2C_SCL       9
+#define BTN_DIR_PIN   4
+#define BUZZER_PIN    5
+#define LED_OK_PIN    6
+#define LED_ERR_PIN   7
+
+MFRC522 rfid(RC522_SS, RC522_RST);
+Adafruit_SSD1306 display(128, 64, &amp;Wire, -1);
+bool isDirectionIn = true;
+
+void beep(int ms) {
+  digitalWrite(BUZZER_PIN, HIGH); // Đảo LOW/HIGH nếu module còi 3 chân kích mức thấp
+  delay(ms);
+  digitalWrite(BUZZER_PIN, LOW);
+}
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(BUZZER_PIN, OUTPUT);
+  pinMode(LED_OK_PIN, OUTPUT);
+  pinMode(LED_ERR_PIN, OUTPUT);
+  pinMode(BTN_DIR_PIN, INPUT_PULLUP);
+
+  Wire.begin(I2C_SDA, I2C_SCL);
+  if (display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 0);
+    display.println("THU VIEN THONG MINH");
+    display.println("Gate Node S3 Ready!");
+    display.display();
+  }
+
+  SPI.begin(RC522_SCK, RC522_MISO, RC522_MOSI, RC522_SS);
+  rfid.PCD_Init();
+  Serial.print("RC522 VersionReg: 0x");
+  Serial.println(rfid.PCD_ReadRegister(rfid.VersionReg), HEX);
+}
+
+void loop() {
+  if (digitalRead(BTN_DIR_PIN) == LOW) {
+    isDirectionIn = !isDirectionIn;
+    beep(60);
+    Serial.printf("Chieu cong: %s\n", isDirectionIn ? "VAO (IN)" : "RA (OUT)");
+    delay(300);
+  }
+
+  if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) return;
+
+  String uid = "";
+  for (byte i = 0; i &lt; rfid.uid.size; i++) {
+    if (rfid.uid.uidByte[i] &lt; 0x10) uid += "0";
+    uid += String(rfid.uid.uidByte[i], HEX);
+  }
+  uid.toUpperCase();
+
+  Serial.printf("[SWIPE %s] UID = %s\n", isDirectionIn ? "IN" : "OUT", uid.c_str());
+  digitalWrite(LED_OK_PIN, HIGH);
+  beep(120);
+  delay(350);
+  digitalWrite(LED_OK_PIN, LOW);
+
+  rfid.PICC_HaltA();
+  rfid.PCD_StopCrypto1();
+}</code></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* =========================================================================
+       DATA DEFINITIONS
+       ========================================================================= */
+    const NODES = {
+      node1: {
+        title: "ESP32-S3 #1 — Seat + Zone Node (Bàn 2 chỗ & Môi trường)",
+        filters: [
+          { id: "all", label: "Tất cả dây" },
+          { id: "power", label: "⚡ Nguồn 5V / GND" },
+          { id: "radar", label: "📡 2x Radar LD2410C" },
+          { id: "fsr", label: "🪑 2x FSR402 (ADC1)" },
+          { id: "led", label: "💡 2x LED WS2812B" },
+          { id: "env", label: "🌡️ SHT31 + BH1750" },
+          { id: "mic", label: "🎙️ Micro INMP441" }
+        ],
+        modules: {
+          pwr1: {
+            name: "Adapter 5V – 2A + Tụ lọc 1000 µF",
+            group: "power",
+            voltage: "5V DC / 2A",
+            tagClass: "tag-5v",
+            summary: "Cấp nguồn trực tiếp cho 2 dải LED WS2812B, 2 Radar LD2410C và chân 5V (5VIN) của ESP32-S3 #1. Bắt buộc nối chung GND toàn mạch!",
+            pins: [
+              ["+5V Adapter", "Chân 5V (5VIN) ESP32-S3 + VCC Radar + 5V LED", "Đỏ", "Không cấp LED bằng cổng USB laptop"],
+              ["GND Adapter", "GND ESP32-S3 + GND mọi module", "Đen", "Common GND bắt buộc"],
+              ["Tụ hóa 1000µF", "Song song +5V và GND dải LED", "Chú ý cực (-)", "Chống sụt áp khi phát Wi-Fi"]
+            ]
+          },
+          radar1: {
+            name: "Radar HLK-LD2410C #1 (Chỗ S01)",
+            group: "radar",
+            voltage: "VCC = 5V | UART = 3.3V",
+            tagClass: "tag-5v",
+            summary: "Giao tiếp UART2 trên ESP32-S3 (GPIO 17/18) ở 256000 baud. Cắm CHÉO chân TX–RX và tránh GPIO 19/20 (USB OTG).",
+            pins: [
+              ["VCC (5V)", "Rail +5V Adapter", "Đỏ", "LD2410C cần 5V (~80 mA)"],
+              ["GND", "GND chung", "Đen", "Mass chung"],
+              ["TX (Radar #1)", "GPIO 17 (UART2 RX2)", "Xanh dương", "Đấu chéo TX radar → GPIO 17"],
+              ["RX (Radar #1)", "GPIO 18 (UART2 TX2)", "Xanh lá", "Đấu chéo RX radar → GPIO 18"]
+            ]
+          },
+          radar2: {
+            name: "Radar HLK-LD2410C #2 (Chỗ S02)",
+            group: "radar",
+            voltage: "VCC = 5V | UART = 3.3V",
+            tagClass: "tag-5v",
+            summary: "Dùng UART1 của ESP32-S3 định tuyến qua GPIO 15 & 16 (hoàn toàn tách biệt với PSRAM/Flash 26–37).",
+            pins: [
+              ["VCC (5V)", "Rail +5V Adapter", "Đỏ", "Nguồn 5V DC"],
+              ["GND", "GND chung", "Đen", "Mass chung"],
+              ["TX (Radar #2)", "GPIO 15 (UART1 RX1)", "Xanh dương", "Serial1.begin(256000, SERIAL_8N1, 15, 16)"],
+              ["RX (Radar #2)", "GPIO 16 (UART1 TX1)", "Xanh lá", "Đấu chéo RX radar → GPIO 16"]
+            ]
+          },
+          fsr: {
+            name: "2x Cảm biến áp lực FSR402 + Trở 10 kΩ",
+            group: "fsr",
+            voltage: "3.3V (ADC1)",
+            tagClass: "tag-3v3",
+            summary: "Trên ESP32-S3, bộ ADC1 nằm ở GPIO 1–10 (khác ESP32 thường!). Dùng GPIO 4 & 5 để đọc analog sạch khi bật Wi-Fi.",
+            pins: [
+              ["FSR #1 · Chân A", "3V3 ESP32-S3", "Cam", "Không phân cực"],
+              ["FSR #1 · Chân B", "GPIO 4 (ADC1_CH3) + Trở 10kΩ về GND", "Tím", "Ngồi: ~1.8–3.0V | Trống: 0V"],
+              ["FSR #2 · Chân A", "3V3 ESP32-S3", "Cam", "Cấp từ 3.3V"],
+              ["FSR #2 · Chân B", "GPIO 5 (ADC1_CH4) + Trở 10kΩ về GND", "Tím", "Tuyệt đối không dùng ADC2 (11–20)"]
+            ]
+          },
+          led: {
+            name: "2x Dải LED RGB WS2812B (8 LED/chỗ)",
+            group: "led",
+            voltage: "5V + Trở Data 330 Ω",
+            tagClass: "tag-5v",
+            summary: "Dùng GPIO 6 & 7 (tránh GPIO 48/38 là đèn RGB có sẵn trên board ESP32-S3). Luôn đấu đúng đầu mũi tên DIN!",
+            pins: [
+              ["+5V (2 dải)", "Rail +5V (qua tụ 1000µF)", "Đỏ", "300–400 mA tối đa/dải"],
+              ["GND (2 dải)", "GND chung", "Đen", "Mass tín hiệu"],
+              ["DIN #1 (S01)", "Qua trở 330Ω → GPIO 6", "Xanh lá", "Bảo vệ LED đầu dải"],
+              ["DIN #2 (S02)", "Qua trở 330Ω → GPIO 7", "Vàng", "Tránh xung nhiễu khởi động"]
+            ]
+          },
+          env: {
+            name: "SHT31 (Nhiệt/Ẩm) + BH1750 (Ánh sáng)",
+            group: "env",
+            voltage: "3.3V (Bus I2C)",
+            tagClass: "tag-3v3",
+            summary: "Dùng chung bus I2C chuẩn mặc định của ESP32-S3: GPIO 8 (SDA) & GPIO 9 (SCL) nhờ khác địa chỉ: SHT31 = 0x44, BH1750 = 0x23.",
+            pins: [
+              ["VCC (2 module)", "3V3 ESP32-S3", "Cam", "Logic I2C chuẩn 3.3V"],
+              ["GND (2 module)", "GND chung", "Đen", "Nối ADDR về GND"],
+              ["SDA chung", "GPIO 8", "Xanh lá", "Chân SDA mặc định trên S3"],
+              ["SCL chung", "GPIO 9", "Vàng", "Chân SCL mặc định trên S3"]
+            ]
+          },
+          mic: {
+            name: "Micro Số I2S INMP441 (Đo độ ồn dB)",
+            group: "mic",
+            voltage: "CHỈ 3.3V (CẤM 5V!)",
+            tagClass: "tag-5v",
+            summary: "Micro số chuẩn I2S dùng GPIO 10/11/12. Cắm nhầm 5V vào VDD sẽ cháy chip MEMS ngay lập tức!",
+            pins: [
+              ["VDD", "3V3 ESP32-S3", "Cam", "⚠️ TUYỆT ĐỐI KHÔNG CẮM 5V"],
+              ["GND & L/R", "GND chung", "Đen", "Nối L/R xuống GND chọn kênh Left"],
+              ["WS (LRCLK)", "GPIO 10", "Tím", "Word Select I2S"],
+              ["SCK (BCLK)", "GPIO 11", "Xanh ngọc", "Bit Clock I2S"],
+              ["SD (DOUT)", "GPIO 12", "Hồng", "Dữ liệu âm thanh vào ESP32-S3"]
+            ]
+          }
+        }
+      },
+
+      node2: {
+        title: "ESP32-S3 #2 — Gate Node (Cổng RFID + OLED + Buzzer)",
+        filters: [
+          { id: "all", label: "Tất cả dây" },
+          { id: "power2", label: "⚡ Nguồn 5V / GND" },
+          { id: "rfid", label: "🪪 RFID RC522 (FSPI)" },
+          { id: "oled", label: "🖥️ OLED SSD1306 (I2C)" },
+          { id: "io", label: "🔔 Còi + LED + Nút IN/OUT" }
+        ],
+        modules: {
+          power2: {
+            name: "Nguồn Adapter 5V – 2A #2",
+            group: "power2",
+            voltage: "5V (5VIN) → 3.3V Nội",
+            tagClass: "tag-5v",
+            summary: "Cấp 5V vào chân 5V (5VIN) của ESP32-S3 #2, dùng ổn áp 3V3 trên board nuôi RC522 và OLED SSD1306.",
+            pins: [
+              ["+5V Adapter", "Chân 5V (5VIN) ESP32-S3 #2", "Đỏ", "Hoặc cấp qua cổng USB-C UART"],
+              ["GND Adapter", "GND ESP32-S3 #2", "Đen", "Mass chung toàn Gate Node"]
+            ]
+          },
+          rfid: {
+            name: "Module RFID RC522 (13.56 MHz · FSPI)",
+            group: "rfid",
+            voltage: "CHỈ 3.3V (CẤM 5V!)",
+            tagClass: "tag-5v",
+            summary: "Đọc thẻ Mifare qua bus FSPI chuẩn của ESP32-S3 (GPIO 10–13). RC522 chỉ chạy 3.3V, cắm nhầm 5V sẽ chết IC MFRC522!",
+            pins: [
+              ["3.3V (VCC)", "3V3 ESP32-S3 #2", "Cam", "⚠️ CẤM CẮM 5V"],
+              ["GND", "GND chung", "Đen", "Mass chung"],
+              ["SDA (SS/CS)", "GPIO 10", "Xanh dương", "FSPI CS mặc định trên S3"],
+              ["SCK", "GPIO 12", "Vàng", "FSPI SCK mặc định trên S3"],
+              ["MOSI", "GPIO 11", "Xanh lá", "FSPI MOSI mặc định trên S3"],
+              ["MISO", "GPIO 13", "Tím", "FSPI MISO mặc định trên S3"],
+              ["RST", "GPIO 14", "Trắng", "Reset cứng RC522"]
+            ]
+          },
+          oled: {
+            name: "Màn Hình OLED 0.96\" SSD1306 (I2C)",
+            group: "oled",
+            voltage: "3.3V (0x3C)",
+            tagClass: "tag-3v3",
+            summary: "Hiển thị lời chào và số chỗ trống từng khu qua bus I2C mặc định ESP32-S3 (GPIO 8/9).",
+            pins: [
+              ["VCC / VDD", "3V3 ESP32-S3 #2", "Cam", "⚠️ Soi kỹ thứ tự VCC/GND in trên PCB!"],
+              ["GND", "GND chung", "Đen", "Một số lô OLED đảo ngược 2 chân đầu"],
+              ["SCL", "GPIO 9", "Vàng", "I2C Clock"],
+              ["SDA", "GPIO 8", "Xanh lá", "I2C Data"]
+            ]
+          },
+          io: {
+            name: "Module Còi 3 chân + LED Xanh/Đỏ + Nút IN/OUT",
+            group: "io",
+            voltage: "3.3V · GPIO + Trở 220 Ω",
+            tagClass: "tag-blue",
+            summary: "Dùng các GPIO 4–7 hoàn toàn trống trên ESP32-S3. Module còi có 3 chân (VCC, GND, I/O); nút nhấn chuyển chế độ quẹt VÀO (IN) hoặc quẹt RA (OUT).",
+            pins: [
+              ["Còi 3 chân (I/O)", "Chân I/O (S) → GPIO 5", "Tím", "Tín hiệu kích còi bíp (đảo HIGH/LOW nếu loại kích mức thấp)"],
+              ["Còi 3 chân (Nguồn)", "VCC → 3V3 · GND → GND chung", "Cam / Đen", "Cấp nguồn cho mạch khuếch đại trên module còi"],
+              ["LED Xanh (+)", "Qua trở 220Ω → GPIO 6", "Xanh lá", "Thẻ hợp lệ"],
+              ["LED Đỏ (+)", "Qua trở 220Ω → GPIO 7", "Đỏ", "Thẻ lỗi / từ chối"],
+              ["Nút IN/OUT", "GPIO 4 và GND", "Trắng", "Dùng INPUT_PULLUP nội"]
+            ]
+          }
+        }
+      }
+    };
+
+    const STEPS = [
+      {
+        short: "Nguồn & GND",
+        title: "Bước 1: Chuẩn bị nguồn & Mass chung",
+        subtitle: "Thiết lập đường nguồn 5V/2A và 3.3V cho 2 kit ESP32-S3",
+        warning: "TUYỆT ĐỐI KHÔNG cắm Adapter 5V vào ổ điện trong lúc đang cắm dây! Trên ESP32-S3 DevKitC-1 có 2 cổng USB-C (UART và USB): khi nạp code và xem Serial Monitor mặc định hãy cắm vào cổng chữ UART.",
+        items: [
+          "Cắm kit ESP32-S3 DevKitC-1 #1 bắc ngang khe giữa 2 breadboard ghép song song (do board S3 bản rộng 25.4mm chiếm gần hết 1 breadboard đơn).",
+          "Đấu jack DC cái của Adapter 5V–2A #1 ra thanh nguồn dọc trên breadboard: Dây Đỏ (+5V) và Dây Đen (GND).",
+          "Nối chân GND của ESP32-S3 #1 vào thanh GND chung; nối chân 5V (5VIN) của ESP32-S3 #1 vào thanh +5V.",
+          "Tạo riêng thanh nguồn phụ 3.3V lấy từ chân 3V3 của ESP32-S3 (tách biệt hẳn +5V!) để cấp cho FSR402, SHT31, BH1750 và INMP441."
+        ]
+      },
+      {
+        short: "FSR402",
+        title: "Bước 2: Cảm biến áp lực FSR402 (ADC1 ESP32-S3)",
+        subtitle: "Lắp mạch phân áp 10 kΩ cho 2 ghế ngồi vào GPIO 4 & GPIO 5 (ADC1)",
+        warning: "Lưu ý khác biệt sống còn của ESP32-S3: Bộ ADC1 nằm ở GPIO 1–10 (KHÔNG phải 32–39 như ESP32 thường; các chân 33–37 trên bản S3 N16R8 bị chiếm bởi Octal PSRAM!). Không dùng ADC2 (GPIO 11–20) vì lỗi khi bật Wi-Fi.",
+        items: [
+          "Cắm 2 điện trở 10 kΩ (Nâu - Đen - Cam) xuống breadboard, một đầu mỗi điện trở cắm vào thanh GND.",
+          "FSR402 #1 (Ghế S01): 1 chân lên thanh 3.3V; chân kia cắm chung hàng với đầu trống trở 10 kΩ thứ nhất rồi nối về GPIO 4.",
+          "FSR402 #2 (Ghế S02): 1 chân lên thanh 3.3V; chân kia cắm chung hàng với đầu trống trở 10 kΩ thứ hai rồi nối về GPIO 5.",
+          "Nếu hàn nối dài dây tới đệm ghế, hàn nhanh < 2 giây tránh chảy đuôi cáp dẹt FSR và bọc ống co nhiệt kín."
+        ]
+      },
+      {
+        short: "2x Radar",
+        title: "Bước 3: 2x Radar mmWave LD2410C",
+        subtitle: "Đấu nối UART2 (GPIO 17/18) và UART1 (GPIO 15/16) ở 256000 baud",
+        warning: "Tránh GPIO 19 & GPIO 20 trên ESP32-S3 vì đó là 2 chân USB OTG (D-/D+) và tránh GPIO 43/44 (UART0 console). Dùng cáp 5P pitch 1.27mm đi kèm LD2410C.",
+        items: [
+          "Radar LD2410C #1 (S01): VCC vào thanh +5V (KHÔNG cắm 3.3V), GND vào thanh GND.",
+          "Đấu chéo UART2 cho Radar #1: TX của Radar #1 → GPIO 17 (RX2); RX của Radar #1 → GPIO 18 (TX2).",
+          "Radar LD2410C #2 (S02): VCC vào thanh +5V, GND vào thanh GND.",
+          "Đấu chéo UART1 cho Radar #2: TX của Radar #2 → GPIO 15 (RX1); RX của Radar #2 → GPIO 16 (TX1)."
+        ]
+      },
+      {
+        short: "LED RGB",
+        title: "Bước 4: 2x Dải LED RGB WS2812B",
+        subtitle: "Lắp tụ lọc nguồn 1000 µF và trở hạn dòng 330 Ω vào GPIO 6 & GPIO 7",
+        warning: "Không dùng GPIO 48 hoặc GPIO 38 vì trùng với đèn RGB onboard của kit ESP32-S3! Dây dữ liệu cắm vào đầu DIN; chân âm (-) tụ 1000µF về GND.",
+        items: [
+          "Cắm tụ hóa 1000 µF (10V hoặc 16V) song song giữa +5V và GND ngay đầu thanh nguồn LED.",
+          "Nối +5V và GND của cả 2 dải WS2812B (8 LED/dải) vào thanh nguồn +5V và GND chung.",
+          "Mắc nối tiếp điện trở 330 Ω (Cam - Cam - Nâu) từ GPIO 6 sang chân DIN của dải WS2812B #1 (S01).",
+          "Mắc nối tiếp điện trở 330 Ω thứ hai từ GPIO 7 sang chân DIN của dải WS2812B #2 (S02)."
+        ]
+      },
+      {
+        short: "Môi trường",
+        title: "Bước 5: Cụm Môi Trường (Zone Node)",
+        subtitle: "Đấu SHT31 + BH1750 (I2C GPIO 8/9) và Micro INMP441 (I2S GPIO 10/11/12)",
+        warning: "CẢNH BÁO ĐỎ: SHT31, BH1750 và đặc biệt là INMP441 chỉ dùng 3.3V! Cấp nhầm 5V vào VDD của INMP441 sẽ hỏng chip ngay lập tức.",
+        items: [
+          "Cấp 3.3V và GND cho SHT31 và BH1750; nối chân ADDR (nếu có) về GND để giữ địa chỉ 0x44 và 0x23.",
+          "Nối chung SDA của SHT31 + BH1750 về GPIO 8; nối chung SCL của cả hai về GPIO 9.",
+          "Với Micro INMP441: nối VDD → 3.3V, GND → GND, và nối chân L/R xuống GND (chọn kênh Left).",
+          "Đấu 3 dây I2S của INMP441: WS → GPIO 10, SCK → GPIO 11, SD → GPIO 12."
+        ]
+      },
+      {
+        short: "Gate RFID",
+        title: "Bước 6: Gate Node (ESP32-S3 #2)",
+        subtitle: "Lắp mạch Cổng ra vào RFID RC522 (FSPI) + OLED SSD1306 (I2C) + Còi & Nút",
+        warning: "Kiểm tra 2 điểm dễ chết mạch: (1) Chân 3.3V của RC522 chỉ cắm 3V3; (2) Soi kỹ thứ tự VCC/GND trên OLED 0.96\" trước khi cấp nguồn.",
+        items: [
+          "Đấu FSPI cho RC522 vào ESP32-S3 #2: 3.3V → 3V3, GND → GND, SDA(SS) → GPIO 10, MOSI → GPIO 11, SCK → GPIO 12, MISO → GPIO 13, RST → GPIO 14.",
+          "Đấu I2C cho OLED SSD1306: VCC → 3V3, GND → GND, SDA → GPIO 8, SCL → GPIO 9.",
+          "Đấu Module Còi 3 chân (VCC → 3V3, GND → GND, I/O → GPIO 5), LED Xanh (qua trở 220Ω) vào GPIO 6, LED Đỏ (qua trở 220Ω) vào GPIO 7.",
+          "Đấu nút nhấn chuyển chiều VÀO/RA giữa GPIO 4 và GND."
+        ]
+      },
+      {
+        short: "Lắp Sa bàn",
+        title: "Bước 7: Lắp cơ khí lên Sa bàn",
+        subtitle: "Cố định cảm biến lên bàn học 2 chỗ và cổng thư viện đúng ràng buộc Mục 2.4",
+        warning: "Giữ 2 radar LD2410C cách nhau ≥ 60 cm (hoặc có vách chắn sóng kim loại) và đặt BH1750 ngửa mặt lên phía đèn trần.",
+        items: [
+          "Dán 2 radar LD2410C dưới gầm mặt bàn, hướng mặt anten vàng về phía ngực người ngồi ghế S01 và S02.",
+          "Đặt 2 cảm biến FSR402 dưới tâm đệm ghế kèm miếng đệm mút tròn Ø 1.5 cm truyền lực.",
+          "Gắn 2 dải LED WS2812B và dán tem mã QR (A2-T05-S01, A2-T05-S02) lên mép trên mặt bàn.",
+          "Đặt cụm môi trường lên vách ngăn giữa bàn; dựng cột Gate Node bằng mica/gỗ ở lối vào."
+        ]
+      },
+      {
+        short: "Kiểm tra & Test",
+        title: "Bước 8: Đo kiểm tra & Nạp Code Test",
+        subtitle: "Đo thông mạch chống chập nguồn trước khi cấp điện & chạy 2 sketch ESP32-S3",
+        warning: "Trong Arduino IDE / PlatformIO, chọn đúng board 'ESP32S3 Dev Module' và cắm cáp vào cổng USB-C có chữ UART để xem Serial Monitor ngay lập tức.",
+        items: [
+          "Đo thông mạch bằng đồng hồ vạn năng giữa +5V với GND và giữa 3.3V với GND — đảm bảo KHÔNG kêu bíp.",
+          "Nạp Sketch 01 vào ESP32-S3 #1, mở Serial Monitor 115200: thấy SHT31 (0x44), BH1750 (0x23), byte UART Radar > 0 và ấn FSR thấy LED đổi Đỏ.",
+          "Dùng app điện thoại 'HLKRadarTool' (Bluetooth) cài Max Gate = Gate 1 (0.75 m) cho từng LD2410C.",
+          "Nạp Sketch 02 vào ESP32-S3 #2: kiểm tra RC522 VersionReg (0x91/0x92), OLED sáng chữ và quẹt thử thẻ nghe tiếng Bíp + in UID."
+        ]
+      }
+    ];
+
+    const BOM_ITEMS = [
+      { id: 1, name: "Kit ESP32-S3 (DevKitC-1 / WROOM-1, 44 chân)", qty: "2", volt: "5V (5VIN) / 3.3V", vClass: "tag-blue", node: "Node 1 & 2", note: "Tránh GPIO 26–37 (Flash/PSRAM) & 19–20 (USB OTG); dùng cổng UART để nạp" },
+      { id: 2, name: "Radar mmWave HLK-LD2410C (24 GHz)", qty: "2", volt: "VCC = 5V", vClass: "tag-5v", node: "Seat Node", note: "Mua kèm cáp 5P pitch 1.27mm" },
+      { id: 3, name: "Cảm biến áp lực FSR402 + Trở 10 kΩ", qty: "2 bộ", volt: "3.3V ADC1", vClass: "tag-3v3", node: "Seat Node", note: "Cắm vào GPIO 4, 5 (ADC1 trên S3); không gập cổ cáp" },
+      { id: 4, name: "Dải LED RGB WS2812B (8 LED)", qty: "2", volt: "VCC = 5V", vClass: "tag-5v", node: "Seat Node", note: "Đấu GPIO 6, 7 (đúng đầu DIN); nối trở 330Ω trên dây Data" },
+      { id: 5, name: "Module RFID RC522 + Thẻ Mifare 13.56 MHz", qty: "1", volt: "CHỈ 3.3V!", vClass: "tag-5v", node: "Gate Node", note: "Cấm cấp 5V; dùng FSPI (GPIO 10–14); không áp sát lên kim loại" },
+      { id: 6, name: "Màn hình OLED 0.96\" I2C SSD1306", qty: "1", volt: "3.3V (0x3C)", vClass: "tag-3v3", node: "Gate Node", note: "Đấu GPIO 8/9; soi kỹ thứ tự VCC/GND in trên PCB" },
+      { id: 7, name: "Cảm biến nhiệt độ, độ ẩm SHT31", qty: "1", volt: "3.3V (0x44)", vClass: "tag-3v3", node: "Zone Node", note: "Đặt cách xa ESP32-S3 ≥ 4 cm" },
+      { id: 8, name: "Cảm biến ánh sáng BH1750", qty: "1", volt: "3.3V (0x23)", vClass: "tag-3v3", node: "Zone Node", note: "Hướng mặt cảm biến lên đèn trần" },
+      { id: 9, name: "Micro số I2S INMP441", qty: "1", volt: "CHỈ 3.3V!", vClass: "tag-5v", node: "Zone Node", note: "Đấu GPIO 10/11/12; L/R xuống GND; cấm cấp 5V" },
+      { id: 10, name: "Module Còi 3 chân, LED Xanh/Đỏ, Nút nhấn, Tụ 1000µF, Trở 330Ω & 220Ω", qty: "1 gói", volt: "Phụ kiện", vClass: "tag-ink", node: "2 Node", note: "Tụ 1000µF (≥10V) lọc nguồn LED; Module còi 3 chân (VCC/GND/IO)" },
+      { id: 11, name: "Adapter 5V – 2A + Jack DC cái vặn vít", qty: "2", volt: "5V – 2A", vClass: "tag-5v", node: "Nguồn", note: "Đo kiểm tra đúng 5.0V–5.2V trước khi đấu" },
+      { id: 12, name: "Breadboard (3–4 cái), Dây cắm Dupont", qty: "1 bộ", volt: "—", vClass: "tag-ok", node: "Đấu nối", note: "Ghép 2 breadboard cho mỗi kit ESP32-S3 bản rộng" },
+      { id: 13, name: "Sa bàn bàn ghế (Gỗ/Mica), Hộp nhựa, Tem QR", qty: "1 bộ", volt: "—", vClass: "tag-ok", node: "Cơ khí", note: "In 2 tem QR có HMAC cho A2-T05-S01 & S02" }
+    ];
+
+    /* =========================================================================
+       STATE & PERSISTENCE
+       ========================================================================= */
+    const STORAGE_KEY = "btl_iot_nhom3_assembly_v2";
+    let appState = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"checks":{},"activeStep":0}');
+    let currentNode = "node1";
+    let diagramMode = "schematic";
+    let currentFilter = "all";
+    let selectedMod = null;
+    let simServerState = "OCCUPIED";
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      updateGlobalProgress();
+    }
+
+    function toggleCheck(key) {
+      appState.checks[key] = !appState.checks[key];
+      saveState();
+      renderStepContent();
+      renderMetroRail();
+      renderBomTable();
+    }
+
+    function resetAllProgress() {
+      if (!confirm("Xóa toàn bộ dấu tick tiến độ lắp ráp và kiểm kê vật tư?")) return;
+      appState.checks = {};
+      saveState();
+      renderStepContent();
+      renderMetroRail();
+      renderBomTable();
+    }
+
+    function updateGlobalProgress() {
+      let total = BOM_ITEMS.length;
+      STEPS.forEach(s => total += s.items.length);
+      let done = 0;
+      Object.values(appState.checks).forEach(v => { if (v) done++; });
+      const pct = total ? Math.round((done / total) * 100) : 0;
+      document.getElementById("globalProgressBar").style.width = pct + "%";
+      document.getElementById("topProgressLine").style.width = pct + "%";
+      document.getElementById("globalProgressText").textContent = `${pct}% (${done}/${total})`;
+    }
+
+    function switchTab(tabId, btnEl) {
+      document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".nav-tab").forEach(b => b.classList.remove("active"));
+      document.getElementById("tab-" + tabId).classList.add("active");
+      btnEl.classList.add("active");
+    }
+
+    /* =========================================================================
+       TAB 1: PRECISION GEOMETRIC SVG SCHEMATICS (ZERO OVERLAP GUARANTEED)
+       ========================================================================= */
+    function setDiagramMode(mode) {
+      diagramMode = mode;
+      document.getElementById("btnModeSch").classList.toggle("active", mode === "schematic");
+      document.getElementById("btnModeBB").classList.toggle("active", mode === "breadboard");
+      renderWiringTab();
+    }
+
+    function selectNode(nodeKey) {
+      currentNode = nodeKey;
+      currentFilter = "all";
+      selectedMod = null;
+      document.getElementById("btnNode1").classList.toggle("active", nodeKey === "node1");
+      document.getElementById("btnNode2").classList.toggle("active", nodeKey === "node2");
+      document.getElementById("exhibitNodeName").textContent = NODES[nodeKey].title;
+      renderWiringTab();
+    }
+
+    function setWireFilter(filterId) {
+      currentFilter = filterId;
+      selectedMod = null;
+      applyWireHighlight();
+      renderFilterChips();
+      renderInspector();
+    }
+
+    function clickModule(modKey) {
+      if (selectedMod === modKey) {
+        selectedMod = null;
+        currentFilter = "all";
+      } else {
+        selectedMod = modKey;
+        currentFilter = NODES[currentNode].modules[modKey].group;
+      }
+      applyWireHighlight();
+      renderFilterChips();
+      renderInspector();
+    }
+
+    function renderFilterChips() {
+      const wrap = document.getElementById("wireFilters");
+      wrap.innerHTML = NODES[currentNode].filters.map(f => `
+        <button class="chip ${currentFilter === f.id ? 'active' : ''}" onclick="setWireFilter('${f.id}')">${f.label}</button>
+      `).join("");
+    }
+
+    function getNode1SVG() {
+      /*
+        Canvas: 980 x 620
+        Left modules:  x = 20..220
+        Left gutter:   x = 220..350 (6 clean lanes: 242, 258, 274, 290, 306, 322)
+        ESP32 #1 box:  x = 350..630 (width 280), y = 40..580 (height 540)
+          - WROOM shield: y = 14..78 inside ESP32 (so abs y = 54..118)
+          - Left pins start at rel y = 116 (abs 156), step 36px -> rel 116,152,188,224,260,296,332,368,440,476
+            (abs y = 156, 192, 228, 264, 300, 336, 372, 408, 480, 516)
+          - Right pins: rel 116,152,216,252,324,360,476
+            (abs y = 156, 192, 256, 292, 364, 400, 516)
+        Right gutter:  x = 630..760 (lanes: 652, 668, 684, 700, 716, 732)
+        Right modules: x = 760..960
+      */
+      return `
+      <svg viewBox="0 0 980 620" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="g1" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e4ddd0" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="980" height="620" fill="url(#g1)"/>
+
+        <!-- ====== WIRES (ROUTED STRICTLY IN GUTTERS) ====== -->
+        <!-- Power 5V & GND (Adapter y=480..590) -->
+        <path class="wire" data-group="power" stroke="#d63c1c" d="M 220 515 L 274 515 L 274 480 L 350 480"/>
+        <path class="wire" data-group="power" stroke="#3b3930" d="M 220 545 L 290 545 L 290 516 L 350 516"/>
+        <!-- 5V from Adapter to LEDs -->
+        <path class="wire" data-group="power led" stroke="#d63c1c" d="M 274 515 L 274 378 L 220 378"/>
+        <!-- 5V & GND bus to Radars on right (along bottom y=596, well below ESP32 y=580!) -->
+        <path class="wire" data-group="power radar" stroke="#d63c1c" d="M 274 515 L 274 596 L 732 596 L 732 88 L 760 88"/>
+        <path class="wire" data-group="power radar" stroke="#d63c1c" d="M 732 252 L 760 252"/>
+        <path class="wire" data-group="power" stroke="#3b3930" d="M 630 516 L 716 516 L 716 112 L 760 112"/>
+        <path class="wire" data-group="power" stroke="#3b3930" d="M 716 276 L 760 276"/>
+        <path class="wire" data-group="power" stroke="#3b3930" d="M 716 444 L 760 444"/>
+
+        <!-- 3.3V bus on left (lane x=242 from ESP32 abs y=156) -->
+        <path class="wire" data-group="fsr" stroke="#c98a12" d="M 350 156 L 242 156 L 242 74 L 220 74"/>
+        <path class="wire" data-group="mic" stroke="#c98a12" d="M 242 156 L 242 222 L 220 222"/>
+        <!-- 3.3V routed cleanly ABOVE ESP32 (y=24) to Env module on right -->
+        <path class="wire" data-group="env power" stroke="#c98a12" d="M 242 74 L 242 22 L 700 22 L 700 420 L 760 420"/>
+
+        <!-- FSR402 Signals -> GPIO 4 (192), GPIO 5 (228) -->
+        <path class="wire" data-group="fsr" stroke="#7c3aed" d="M 220 100 L 306 100 L 306 192 L 350 192"/>
+        <path class="wire" data-group="fsr" stroke="#9333ea" d="M 220 126 L 290 126 L 290 228 L 350 228"/>
+
+        <!-- INMP441 I2S -> GPIO 12 (264), GPIO 10 (300), GPIO 11 (336) -->
+        <path class="wire" data-group="mic" stroke="#1f7a6b" d="M 220 248 L 322 248 L 322 264 L 350 264"/>
+        <path class="wire" data-group="mic" stroke="#0f766e" d="M 220 274 L 306 274 L 306 300 L 350 300"/>
+        <path class="wire" data-group="mic" stroke="#2853c9" d="M 220 300 L 290 300 L 290 336 L 350 336"/>
+
+        <!-- WS2812B Data -> GPIO 6 (372), GPIO 7 (408) -->
+        <path class="wire" data-group="led" stroke="#2e7a4e" d="M 220 404 L 306 404 L 306 372 L 350 372"/>
+        <path class="wire" data-group="led" stroke="#15803d" d="M 220 430 L 322 430 L 322 408 L 350 408"/>
+
+        <!-- Radar #1 -> GPIO 17 (156), GPIO 18 (192) -->
+        <path class="wire" data-group="radar" data-mod="radar1" stroke="#2853c9" d="M 760 138 L 668 138 L 668 156 L 630 156"/>
+        <path class="wire" data-group="radar" data-mod="radar1" stroke="#2e7a4e" d="M 760 164 L 684 164 L 684 192 L 630 192"/>
+
+        <!-- Radar #2 -> GPIO 15 (256), GPIO 16 (292) -->
+        <path class="wire" data-group="radar" data-mod="radar2" stroke="#2853c9" d="M 760 302 L 668 302 L 668 256 L 630 256"/>
+        <path class="wire" data-group="radar" data-mod="radar2" stroke="#2e7a4e" d="M 760 328 L 684 328 L 684 292 L 630 292"/>
+
+        <!-- Env I2C -> GPIO 8 (364), GPIO 9 (400) -->
+        <path class="wire" data-group="env" stroke="#2e7a4e" d="M 760 470 L 668 470 L 668 364 L 630 364"/>
+        <path class="wire" data-group="env" stroke="#c98a12" d="M 760 496 L 684 496 L 684 400 L 630 400"/>
+
+        <!-- ====== CENTER: ESP32-S3 #1 (350, 40, 280x540) ====== -->
+        <g transform="translate(350, 40)">
+          <rect x="0" y="0" width="280" height="540" rx="8" fill="#17160f" stroke="#17160f" stroke-width="2"/>
+          <rect x="60" y="14" width="160" height="64" rx="4" fill="#2a2922" stroke="#7a756b" stroke-width="1.2"/>
+          <text x="140" y="42" fill="#fbf9f4" font-size="13" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">ESP32-S3-WROOM-1</text>
+          <text x="140" y="61" fill="#d63c1c" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace" text-anchor="middle">NODE #1 · SEAT + ZONE</text>
+          <line x1="140" y1="92" x2="140" y2="505" stroke="#2a2922" stroke-width="1"/>
+          <rect x="64" y="520" width="60" height="20" rx="2" fill="#a8a296"/>
+          <text x="94" y="534" fill="#17160f" font-size="9.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">UART</text>
+          <rect x="156" y="520" width="60" height="20" rx="2" fill="#7a756b"/>
+          <text x="186" y="534" fill="#17160f" font-size="9.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">USB</text>
+
+          <!-- Left Pins (rel y: 116,152,188,224,260,296,332,368,440,476) -->
+          <g font-size="11" font-family="JetBrains Mono, monospace" fill="#f2ede4">
+            <circle cx="8" cy="116" r="4.5" fill="#c98a12"/><text x="19" y="120">3V3</text>
+            <circle cx="8" cy="152" r="4.5" fill="#a855f7"/><text x="19" y="156">GPIO 4 (ADC1)</text>
+            <circle cx="8" cy="188" r="4.5" fill="#a855f7"/><text x="19" y="192">GPIO 5 (ADC1)</text>
+            <circle cx="8" cy="224" r="4.5" fill="#1f7a6b"/><text x="19" y="228">GPIO 12 (SD)</text>
+            <circle cx="8" cy="260" r="4.5" fill="#1f7a6b"/><text x="19" y="264">GPIO 10 (WS)</text>
+            <circle cx="8" cy="296" r="4.5" fill="#2853c9"/><text x="19" y="300">GPIO 11 (SCK)</text>
+            <circle cx="8" cy="332" r="4.5" fill="#2e7a4e"/><text x="19" y="336">GPIO 6 (LED1)</text>
+            <circle cx="8" cy="368" r="4.5" fill="#2e7a4e"/><text x="19" y="372">GPIO 7 (LED2)</text>
+            <circle cx="8" cy="440" r="4.5" fill="#d63c1c"/><text x="19" y="444">5V (5VIN)</text>
+            <circle cx="8" cy="476" r="4.5" fill="#7a756b"/><text x="19" y="480">GND</text>
+          </g>
+
+          <!-- Right Pins (rel y: 116,152,216,252,324,360,476) -->
+          <g font-size="11" font-family="JetBrains Mono, monospace" fill="#f2ede4" text-anchor="end">
+            <circle cx="272" cy="116" r="4.5" fill="#2853c9"/><text x="261" y="120">(RX2) GPIO 17</text>
+            <circle cx="272" cy="152" r="4.5" fill="#2e7a4e"/><text x="261" y="156">(TX2) GPIO 18</text>
+            <circle cx="272" cy="216" r="4.5" fill="#2853c9"/><text x="261" y="220">(RX1) GPIO 15</text>
+            <circle cx="272" cy="252" r="4.5" fill="#2e7a4e"/><text x="261" y="256">(TX1) GPIO 16</text>
+            <circle cx="272" cy="324" r="4.5" fill="#2e7a4e"/><text x="261" y="328">(SDA) GPIO 8</text>
+            <circle cx="272" cy="360" r="4.5" fill="#c98a12"/><text x="261" y="364">(SCL) GPIO 9</text>
+            <circle cx="272" cy="476" r="4.5" fill="#7a756b"/><text x="261" y="480">GND</text>
+          </g>
+        </g>
+
+        <!-- ====== LEFT MODULES (x=20..220) ====== -->
+        <g class="mod-box" data-mod="fsr" data-group="fsr" onclick="clickModule('fsr')" transform="translate(20, 34)">
+          <rect class="mod-frame" width="200" height="114" rx="5" fill="#fbf9f4" stroke="#17160f" stroke-width="1.6"/>
+          <text x="14" y="22" fill="#17160f" font-size="12" font-weight="700" font-family="Be Vietnam Pro, sans-serif">2x Áp lực FSR402</text>
+          <text x="14" y="42" fill="#c98a12" font-size="10.5" font-weight="600" font-family="JetBrains Mono, monospace">VCC: 3.3V + Trở 10kΩ</text>
+          <text x="14" y="68" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">S01 Out → GPIO 4</text>
+          <text x="14" y="94" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">S02 Out → GPIO 5</text>
+        </g>
+
+        <g class="mod-box" data-mod="mic" data-group="mic" onclick="clickModule('mic')" transform="translate(20, 174)">
+          <rect class="mod-frame" width="200" height="142" rx="5" fill="#fbf9f4" stroke="#17160f" stroke-width="1.6"/>
+          <text x="14" y="22" fill="#17160f" font-size="12" font-weight="700" font-family="Be Vietnam Pro, sans-serif">Micro I2S INMP441</text>
+          <text x="14" y="49" fill="#d63c1c" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace">⚠ VDD: CHỈ 3.3V</text>
+          <text x="14" y="76" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">SD  → GPIO 12</text>
+          <text x="14" y="102" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">WS  → GPIO 10</text>
+          <text x="14" y="128" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">SCK → GPIO 11 (L/R=GND)</text>
+        </g>
+
+        <g class="mod-box" data-mod="led" data-group="led" onclick="clickModule('led')" transform="translate(20, 336)">
+          <rect class="mod-frame" width="200" height="114" rx="5" fill="#fbf9f4" stroke="#17160f" stroke-width="1.6"/>
+          <text x="14" y="22" fill="#17160f" font-size="12" font-weight="700" font-family="Be Vietnam Pro, sans-serif">2x LED WS2812B (8 LED)</text>
+          <text x="14" y="44" fill="#d63c1c" font-size="10.5" font-weight="600" font-family="JetBrains Mono, monospace">5V + Tụ lọc 1000µF</text>
+          <text x="14" y="70" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">DIN #1 (330Ω) → GPIO 6</text>
+          <text x="14" y="96" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">DIN #2 (330Ω) → GPIO 7</text>
+        </g>
+
+        <g class="mod-box" data-mod="pwr1" data-group="power" onclick="clickModule('pwr1')" transform="translate(20, 472)">
+          <rect class="mod-frame" width="200" height="96" rx="5" fill="#fbf9f4" stroke="#d63c1c" stroke-width="1.8"/>
+          <text x="14" y="24" fill="#d63c1c" font-size="12" font-weight="700" font-family="Be Vietnam Pro, sans-serif">Adapter 5V – 2A #1</text>
+          <text x="14" y="46" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">+5V → 5VIN, LED, Radar</text>
+          <text x="14" y="75" fill="#7a756b" font-size="10.5" font-family="JetBrains Mono, monospace">GND → Common Mass</text>
+        </g>
+
+        <!-- ====== RIGHT MODULES (x=760..960) ====== -->
+        <g class="mod-box" data-mod="radar1" data-group="radar" onclick="clickModule('radar1')" transform="translate(760, 46)">
+          <rect class="mod-frame" width="200" height="140" rx="5" fill="#fbf9f4" stroke="#17160f" stroke-width="1.6"/>
+          <text x="14" y="22" fill="#17160f" font-size="12" font-weight="700" font-family="Be Vietnam Pro, sans-serif">Radar LD2410C #1 (S01)</text>
+          <text x="14" y="44" fill="#d63c1c" font-size="10.5" font-weight="600" font-family="JetBrains Mono, monospace">VCC: 5V (UART 256000)</text>
+          <text x="14" y="68" fill="#7a756b" font-size="10.5" font-family="JetBrains Mono, monospace">GND → Common Mass</text>
+          <text x="14" y="94" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">TX → GPIO 17 (RX2)</text>
+          <text x="14" y="120" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">RX → GPIO 18 (TX2)</text>
+        </g>
+
+        <g class="mod-box" data-mod="radar2" data-group="radar" onclick="clickModule('radar2')" transform="translate(760, 210)">
+          <rect class="mod-frame" width="200" height="140" rx="5" fill="#fbf9f4" stroke="#17160f" stroke-width="1.6"/>
+          <text x="14" y="22" fill="#17160f" font-size="12" font-weight="700" font-family="Be Vietnam Pro, sans-serif">Radar LD2410C #2 (S02)</text>
+          <text x="14" y="44" fill="#d63c1c" font-size="10.5" font-weight="600" font-family="JetBrains Mono, monospace">VCC: 5V (UART1)</text>
+          <text x="14" y="68" fill="#7a756b" font-size="10.5" font-family="JetBrains Mono, monospace">GND → Common Mass</text>
+          <text x="14" y="94" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">TX → GPIO 15 (RX1)</text>
+          <text x="14" y="120" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">RX → GPIO 16 (TX1)</text>
+        </g>
+
+        <g class="mod-box" data-mod="env" data-group="env" onclick="clickModule('env')" transform="translate(760, 378)">
+          <rect class="mod-frame" width="200" height="142" rx="5" fill="#fbf9f4" stroke="#17160f" stroke-width="1.6"/>
+          <text x="14" y="22" fill="#17160f" font-size="12" font-weight="700" font-family="Be Vietnam Pro, sans-serif">SHT31 + BH1750 (I2C)</text>
+          <text x="14" y="44" fill="#c98a12" font-size="10.5" font-weight="600" font-family="JetBrains Mono, monospace">VCC: 3.3V (0x44 &amp; 0x23)</text>
+          <text x="14" y="68" fill="#7a756b" font-size="10.5" font-family="JetBrains Mono, monospace">GND → Common Mass</text>
+          <text x="14" y="94" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">SDA chung → GPIO 8</text>
+          <text x="14" y="120" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">SCL chung → GPIO 9</text>
+        </g>
+      </svg>`;
+    }
+
+    function getNode2SVG() {
+      /*
+        Canvas: 980 x 540
+        ESP32 #2 box: x=350..630 (width 280), y=40..490 (height 450)
+          - WROOM shield: y=14..78 inside ESP32 (abs 54..118)
+          - Left pins (rel y: 112, 152, 212, 252, 292, 332, 382, 418)
+            -> abs y: 152, 192, 252, 292, 332, 372, 422, 458
+          - Right pins (rel y: 112, 152, 192, 232, 292, 332, 418)
+            -> abs y: 152, 192, 232, 272, 332, 372, 458
+      */
+      return `
+      <svg viewBox="0 0 980 540" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="g2" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e4ddd0" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="980" height="540" fill="url(#g2)"/>
+
+        <!-- ====== WIRES ====== -->
+        <!-- Power 5V & GND -->
+        <path class="wire" data-group="power2" stroke="#d63c1c" d="M 220 434 L 284 434 L 284 422 L 350 422"/>
+        <path class="wire" data-group="power2" stroke="#3b3930" d="M 220 462 L 350 458"/>
+        <path class="wire" data-group="power2 rfid oled" stroke="#3b3930" d="M 630 458 L 718 458 L 718 112 L 760 112"/>
+        <path class="wire" data-group="power2 oled" stroke="#3b3930" d="M 718 352 L 760 352"/>
+
+        <!-- 3.3V bus from ESP32 abs y=152 -->
+        <path class="wire" data-group="rfid" stroke="#c98a12" d="M 350 152 L 248 152 L 248 90 L 220 90"/>
+        <path class="wire" data-group="rfid oled" stroke="#c98a12" d="M 248 90 L 248 22 L 700 22 L 700 84 L 760 84"/>
+        <path class="wire" data-group="oled" stroke="#c98a12" d="M 700 324 L 760 324"/>
+
+        <!-- RC522 RST -> GPIO 14 (abs 192) -->
+        <path class="wire" data-group="rfid" stroke="#7a756b" d="M 220 120 L 284 120 L 284 192 L 350 192"/>
+
+        <!-- Gate IO -> GPIO 4 (252), 5 (292), 6 (332), 7 (372) -->
+        <path class="wire" data-group="io" stroke="#3b3930" d="M 220 232 L 298 232 L 298 252 L 350 252"/>
+        <path class="wire" data-group="io" stroke="#7c3aed" d="M 220 264 L 284 264 L 284 292 L 350 292"/>
+        <path class="wire" data-group="io" stroke="#2e7a4e" d="M 220 296 L 270 296 L 270 332 L 350 332"/>
+        <path class="wire" data-group="io" stroke="#d63c1c" d="M 220 328 L 256 328 L 256 372 L 350 372"/>
+
+        <!-- RC522 FSPI right -> GPIO 11 (152), 13 (192), 12 (232), 10 (272) -->
+        <path class="wire" data-group="rfid" stroke="#2e7a4e" d="M 760 142 L 668 142 L 668 152 L 630 152"/>
+        <path class="wire" data-group="rfid" stroke="#7c3aed" d="M 760 172 L 682 172 L 682 192 L 630 192"/>
+        <path class="wire" data-group="rfid" stroke="#c98a12" d="M 760 202 L 668 202 L 668 232 L 630 232"/>
+        <path class="wire" data-group="rfid" stroke="#2853c9" d="M 760 232 L 682 232 L 682 272 L 630 272"/>
+
+        <!-- OLED I2C right -> GPIO 9 (332), 8 (372) -->
+        <path class="wire" data-group="oled" stroke="#c98a12" d="M 760 382 L 668 382 L 668 332 L 630 332"/>
+        <path class="wire" data-group="oled" stroke="#2e7a4e" d="M 760 412 L 682 412 L 682 372 L 630 372"/>
+
+        <!-- ====== CENTER: ESP32-S3 #2 (350, 40, 280x450) ====== -->
+        <g transform="translate(350, 40)">
+          <rect x="0" y="0" width="280" height="450" rx="8" fill="#17160f" stroke="#17160f" stroke-width="2"/>
+          <rect x="60" y="14" width="160" height="64" rx="4" fill="#2a2922" stroke="#7a756b" stroke-width="1.2"/>
+          <text x="140" y="42" fill="#fbf9f4" font-size="13" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">ESP32-S3-WROOM-1</text>
+          <text x="140" y="61" fill="#2e7a4e" font-size="11" font-weight="600" font-family="JetBrains Mono, monospace" text-anchor="middle">NODE #2 · GATE NODE</text>
+          <line x1="140" y1="92" x2="140" y2="415" stroke="#2a2922" stroke-width="1"/>
+          <rect x="64" y="430" width="60" height="20" rx="2" fill="#a8a296"/>
+          <text x="94" y="444" fill="#17160f" font-size="9.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">UART</text>
+          <rect x="156" y="430" width="60" height="20" rx="2" fill="#7a756b"/>
+          <text x="186" y="444" fill="#17160f" font-size="9.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">USB</text>
+
+          <!-- Left Pins -->
+          <g font-size="11" font-family="JetBrains Mono, monospace" fill="#f2ede4">
+            <circle cx="8" cy="112" r="4.5" fill="#c98a12"/><text x="19" y="116">3V3</text>
+            <circle cx="8" cy="152" r="4.5" fill="#7a756b"/><text x="19" y="156">GPIO 14 (RST)</text>
+            <circle cx="8" cy="212" r="4.5" fill="#a8a296"/><text x="19" y="216">GPIO 4 (BTN)</text>
+            <circle cx="8" cy="252" r="4.5" fill="#a855f7"/><text x="19" y="256">GPIO 5 (BUZZ)</text>
+            <circle cx="8" cy="292" r="4.5" fill="#2e7a4e"/><text x="19" y="296">GPIO 6 (LED OK)</text>
+            <circle cx="8" cy="332" r="4.5" fill="#d63c1c"/><text x="19" y="336">GPIO 7 (LED ERR)</text>
+            <circle cx="8" cy="382" r="4.5" fill="#d63c1c"/><text x="19" y="386">5V (5VIN)</text>
+            <circle cx="8" cy="418" r="4.5" fill="#7a756b"/><text x="19" y="422">GND</text>
+          </g>
+
+          <!-- Right Pins -->
+          <g font-size="11" font-family="JetBrains Mono, monospace" fill="#f2ede4" text-anchor="end">
+            <circle cx="272" cy="112" r="4.5" fill="#2e7a4e"/><text x="261" y="116">(MOSI) GPIO 11</text>
+            <circle cx="272" cy="152" r="4.5" fill="#a855f7"/><text x="261" y="156">(MISO) GPIO 13</text>
+            <circle cx="272" cy="192" r="4.5" fill="#c98a12"/><text x="261" y="196">(SCK) GPIO 12</text>
+            <circle cx="272" cy="232" r="4.5" fill="#2853c9"/><text x="261" y="236">(SS) GPIO 10</text>
+            <circle cx="272" cy="292" r="4.5" fill="#c98a12"/><text x="261" y="296">(SCL) GPIO 9</text>
+            <circle cx="272" cy="332" r="4.5" fill="#2e7a4e"/><text x="261" y="336">(SDA) GPIO 8</text>
+            <circle cx="272" cy="418" r="4.5" fill="#7a756b"/><text x="261" y="422">GND</text>
+          </g>
+        </g>
+
+        <!-- LEFT MODULES -->
+        <g class="mod-box" data-mod="rfid" data-group="rfid" onclick="clickModule('rfid')" transform="translate(20, 44)">
+          <rect class="mod-frame" width="200" height="114" rx="5" fill="#fbf9f4" stroke="#d63c1c" stroke-width="1.6"/>
+          <text x="14" y="22" fill="#17160f" font-size="12" font-weight="700" font-family="Be Vietnam Pro, sans-serif">Nguồn &amp; Reset RC522</text>
+          <text x="14" y="49" fill="#d63c1c" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace">⚠ VCC → 3V3 (CẤM 5V!)</text>
+          <text x="14" y="79" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">RST → GPIO 14</text>
+        </g>
+
+        <g class="mod-box" data-mod="io" data-group="io" onclick="clickModule('io')" transform="translate(20, 190)">
+          <rect class="mod-frame" width="200" height="168" rx="5" fill="#fbf9f4" stroke="#17160f" stroke-width="1.6"/>
+          <text x="14" y="22" fill="#17160f" font-size="12" font-weight="700" font-family="Be Vietnam Pro, sans-serif">Còi + LED + Nút Chiều</text>
+          <text x="14" y="46" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">Nút IN/OUT → GPIO 4</text>
+          <text x="14" y="76" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">Còi 3 chân I/O → G5</text>
+          <text x="14" y="91" fill="#c98a12" font-size="9" font-weight="600" font-family="JetBrains Mono, monospace">+ cấp VCC→3V3, GND→Mass</text>
+          <text x="14" y="110" fill="#2e7a4e" font-size="10.5" font-family="JetBrains Mono, monospace">LED Xanh (220Ω) → 6</text>
+          <text x="14" y="142" fill="#d63c1c" font-size="10.5" font-family="JetBrains Mono, monospace">LED Đỏ (220Ω) → 7</text>
+        </g>
+
+        <g class="mod-box" data-mod="power2" data-group="power2" onclick="clickModule('power2')" transform="translate(20, 392)">
+          <rect class="mod-frame" width="200" height="96" rx="5" fill="#fbf9f4" stroke="#d63c1c" stroke-width="1.8"/>
+          <text x="14" y="24" fill="#d63c1c" font-size="12" font-weight="700" font-family="Be Vietnam Pro, sans-serif">Adapter 5V – 2A #2</text>
+          <text x="14" y="46" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">+5V → 5VIN ESP32-S3</text>
+          <text x="14" y="74" fill="#7a756b" font-size="10.5" font-family="JetBrains Mono, monospace">GND → Common Mass</text>
+        </g>
+
+        <!-- RIGHT MODULES -->
+        <g class="mod-box" data-mod="rfid" data-group="rfid" onclick="clickModule('rfid')" transform="translate(760, 44)">
+          <rect class="mod-frame" width="200" height="214" rx="5" fill="#fbf9f4" stroke="#17160f" stroke-width="1.6"/>
+          <text x="14" y="22" fill="#17160f" font-size="12" font-weight="700" font-family="Be Vietnam Pro, sans-serif">RFID RC522 (FSPI)</text>
+          <text x="14" y="44" fill="#d63c1c" font-size="10.5" font-weight="600" font-family="JetBrains Mono, monospace">3.3V ← Chân 3V3</text>
+          <text x="14" y="72" fill="#7a756b" font-size="10.5" font-family="JetBrains Mono, monospace">GND  → Common Mass</text>
+          <text x="14" y="102" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">MOSI → GPIO 11</text>
+          <text x="14" y="132" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">MISO → GPIO 13</text>
+          <text x="14" y="162" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">SCK  → GPIO 12</text>
+          <text x="14" y="192" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">SDA(SS) → GPIO 10</text>
+        </g>
+
+        <g class="mod-box" data-mod="oled" data-group="oled" onclick="clickModule('oled')" transform="translate(760, 286)">
+          <rect class="mod-frame" width="200" height="154" rx="5" fill="#fbf9f4" stroke="#17160f" stroke-width="1.6"/>
+          <text x="14" y="22" fill="#17160f" font-size="12" font-weight="700" font-family="Be Vietnam Pro, sans-serif">OLED 0.96" SSD1306</text>
+          <text x="14" y="42" fill="#c98a12" font-size="10.5" font-weight="600" font-family="JetBrains Mono, monospace">3.3V (Địa chỉ 0x3C)</text>
+          <text x="14" y="70" fill="#7a756b" font-size="10.5" font-family="JetBrains Mono, monospace">GND → Common Mass</text>
+          <text x="14" y="100" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">SCL → GPIO 9</text>
+          <text x="14" y="130" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">SDA → GPIO 8</text>
+        </g>
+      </svg>`;
+    }
+
+    /* =========================================================================
+       REALISTIC INTERACTIVE BREADBOARD SVG RENDERER (FRITZING-STYLE)
+       ========================================================================= */
+    function renderDualBreadboardShell(titleText) {
+      // 25 columns from x=190 to x=862 (step 28px)
+      const cols = [];
+      for (let i = 0; i < 25; i++) cols.push(190 + i * 28);
+      const topRows = [204, 222, 240, 258, 276];
+      const botRows = [366, 384, 402, 420, 438];
+
+      let holes = "";
+      // Power rails holes (top: y=158, 176; bot: y=474, 492)
+      cols.forEach((cx, idx) => {
+        if (idx % 6 === 5) return; // Realistic 5-hole grouping gap
+        holes += `<rect x="${cx-2.5}" y="155.5" width="5" height="5" rx="1" fill="#2a2922"/>`;
+        holes += `<rect x="${cx-2.5}" y="173.5" width="5" height="5" rx="1" fill="#2a2922"/>`;
+        holes += `<rect x="${cx-2.5}" y="471.5" width="5" height="5" rx="1" fill="#2a2922"/>`;
+        holes += `<rect x="${cx-2.5}" y="489.5" width="5" height="5" rx="1" fill="#2a2922"/>`;
+      });
+      // Main terminal strip holes
+      cols.forEach(cx => {
+        topRows.forEach(ry => {
+          holes += `<rect x="${cx-2.5}" y="${ry-2.5}" width="5" height="5" rx="1" fill="#2a2922"/>`;
+        });
+        botRows.forEach(ry => {
+          holes += `<rect x="${cx-2.5}" y="${ry-2.5}" width="5" height="5" rx="1" fill="#2a2922"/>`;
+        });
+      });
+
+      return `
+        <!-- Dual Breadboard Plastic Body -->
+        <rect x="135" y="138" width="770" height="384" rx="8" fill="#faf8f2" stroke="#17160f" stroke-width="2"/>
+        <rect x="141" y="144" width="758" height="372" rx="5" fill="#f5f1e8" stroke="#d3ccbe" stroke-width="1"/>
+
+        <!-- Top Power Rail (+3.3V & GND) -->
+        <line x1="176" y1="150" x2="880" y2="150" stroke="#c98a12" stroke-width="2.2"/>
+        <line x1="176" y1="184" x2="880" y2="184" stroke="#2853c9" stroke-width="2.2"/>
+        <text x="145" y="161" fill="#c98a12" font-size="8.5" font-weight="700" font-family="JetBrains Mono, monospace">3V3</text>
+        <text x="145" y="179" fill="#2853c9" font-size="8.5" font-weight="700" font-family="JetBrains Mono, monospace">GND</text>
+
+        <!-- Dual-Breadboard Seam -->
+        <rect x="142" y="302" width="756" height="40" fill="#e8e1d3"/>
+        <line x1="142" y1="322" x2="898" y2="322" stroke="#a8a296" stroke-width="1.2" stroke-dasharray="6 4"/>
+        <rect x="148" y="313" width="106" height="17" rx="2" fill="#e8e1d3"/>
+        <text x="201" y="325" fill="#7a756b" font-size="8.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">2 BREADBOARD GHÉP</text>
+        <rect x="720" y="313" width="160" height="17" rx="2" fill="#e8e1d3"/>
+        <text x="800" y="325" fill="#7a756b" font-size="8.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">${titleText}</text>
+
+        <!-- Bottom Power Rail (+5V & GND) -->
+        <line x1="176" y1="466" x2="880" y2="466" stroke="#d63c1c" stroke-width="2.2"/>
+        <line x1="176" y1="500" x2="880" y2="500" stroke="#2853c9" stroke-width="2.2"/>
+        <text x="145" y="477" fill="#d63c1c" font-size="8.5" font-weight="700" font-family="JetBrains Mono, monospace">+5V</text>
+        <text x="145" y="495" fill="#2853c9" font-size="8.5" font-weight="700" font-family="JetBrains Mono, monospace">GND</text>
+
+        <!-- Row labels (a..e / f..j) -->
+        <g fill="#7a756b" font-size="9" font-family="JetBrains Mono, monospace">
+          <text x="164" y="207">a</text><text x="164" y="225">b</text><text x="164" y="243">c</text><text x="164" y="261">d</text><text x="164" y="279">e</text>
+          <text x="164" y="369">f</text><text x="164" y="387">g</text><text x="164" y="405">h</text><text x="164" y="423">i</text><text x="164" y="441">j</text>
+        </g>
+
+        <!-- Tie-point holes -->
+        ${holes}
+      `;
+    }
+
+    function renderResistorV(x, y1, y2, b1, b2, b3, label, group) {
+      const midY = (y1 + y2) / 2;
+      return `
+        <g class="wire" data-group="${group}">
+          <line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" stroke="#64748b" stroke-width="2.5"/>
+          <rect x="${x-6}" y="${midY-16}" width="12" height="32" rx="4" fill="#e5c799" stroke="#17160f" stroke-width="1.2"/>
+          <rect x="${x-5.5}" y="${midY-11}" width="11" height="3.5" fill="${b1}"/>
+          <rect x="${x-5.5}" y="${midY-4}" width="11" height="3.5" fill="${b2}"/>
+          <rect x="${x-5.5}" y="${midY+3}" width="11" height="3.5" fill="${b3}"/>
+          <rect x="${x-5.5}" y="${midY+10}" width="11" height="2.5" fill="#d97706"/>
+          <rect x="${x+8}" y="${midY-8}" width="34" height="15" rx="2" fill="#fbf9f4" stroke="#d3ccbe" stroke-width="0.8"/>
+          <text x="${x+25}" y="${midY+3}" fill="#17160f" font-size="8.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">${label}</text>
+        </g>`;
+    }
+
+    function renderResistorH(x1, x2, y, b1, b2, b3, label, group, bodyX) {
+      const midX = bodyX !== undefined ? bodyX : (x1 + x2) / 2;
+      return `
+        <g class="wire" data-group="${group}">
+          <line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="#64748b" stroke-width="2.5"/>
+          <rect x="${midX-17}" y="${y-6}" width="34" height="12" rx="4" fill="#e5c799" stroke="#17160f" stroke-width="1.2"/>
+          <rect x="${midX-12}" y="${y-5.5}" width="3.5" height="11" fill="${b1}"/>
+          <rect x="${midX-5}" y="${y-5.5}" width="3.5" height="11" fill="${b2}"/>
+          <rect x="${midX+2}" y="${y-5.5}" width="3.5" height="11" fill="${b3}"/>
+          <rect x="${midX+9}" y="${y-5.5}" width="2.5" height="11" fill="#d97706"/>
+          <rect x="${midX-18}" y="${y-21}" width="36" height="13" rx="2" fill="#fbf9f4" stroke="#d3ccbe" stroke-width="0.8"/>
+          <text x="${midX}" y="${y-11.5}" fill="#17160f" font-size="8.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">${label}</text>
+        </g>`;
+    }
+
+    function getBreadboardNode1SVG() {
+      /*
+        Columns used for ESP32-S3 #1 (x = 358 to 666, 12 cols * 28px):
+          c0=358 (3V3 / 5V)
+          c1=386 (G4 / GND)
+          c2=414 (G5 / —)
+          c3=442 (G6 / G17 RX2)
+          c4=470 (G7 / G18 TX2)
+          c5=498 (G10 WS / G15 RX1)
+          c6=526 (G11 SCK / G16 TX1)
+          c7=554 (G12 SD / —)
+          c8=582 (G8 SDA / —)
+          c9=610 (G9 SCL / —)
+          c10=638 (— / GND)
+        Left spare breadboard columns: 190, 218, 246, 274, 302, 330
+        Right spare breadboard columns: 694, 722, 750, 778, 806, 834, 862
+      */
+      return `
+      <svg viewBox="0 0 1040 675" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="bbGrid1" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e4ddd0" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="1040" height="675" fill="url(#bbGrid1)"/>
+
+        ${renderDualBreadboardShell("NODE #1 · SEAT + ZONE")}
+
+        <!-- ====== COMMON GND BRIDGE & 1000uF CAPACITOR ====== -->
+        <path class="wire" data-group="power" stroke="#17160f" d="M 190 176 L 190 191 L 128 191 L 128 507 L 190 507 L 190 492"/>
+        <!-- 1000uF Cap across +5V (x=218, y=474) and GND (x=246, y=492) -->
+        <g class="wire" data-group="power led">
+          <path stroke="#64748b" stroke-width="2.4" d="M 218 474 L 218 456"/>
+          <path stroke="#64748b" stroke-width="2.4" d="M 246 492 L 246 456"/>
+          <rect x="208" y="424" width="48" height="34" rx="6" fill="#1e293b" stroke="#17160f" stroke-width="1.5"/>
+          <rect x="242" y="424" width="12" height="34" rx="2" fill="#cbd5e1"/>
+          <text x="248" y="445" fill="#17160f" font-size="11" font-weight="800" font-family="JetBrains Mono, monospace" text-anchor="middle">-</text>
+          <text x="225" y="445" fill="#f8fafc" font-size="9" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">1000µF</text>
+        </g>
+
+        <!-- ====== HORIZONTAL ESP32-S3 DEVKITC-1 PCB ====== -->
+        <g transform="translate(342, 272)">
+          <!-- PCB Body spanning upper row e (y=276) to lower row f (y=366) -->
+          <rect x="0" y="0" width="356" height="98" rx="6" fill="#17160f" stroke="#17160f" stroke-width="2"/>
+          <!-- WROOM-1 Metal RF Shield on left -->
+          <rect x="12" y="18" width="78" height="62" rx="3" fill="#475569" stroke="#cbd5e1" stroke-width="1"/>
+          <text x="51" y="46" fill="#f8fafc" font-size="9" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">ESP32-S3</text>
+          <text x="51" y="60" fill="#cbd5e1" font-size="8" font-family="JetBrains Mono, monospace" text-anchor="middle">WROOM-1</text>
+          <!-- Dual USB-C Ports on right edge -->
+          <rect x="338" y="18" width="22" height="22" rx="3" fill="#94a3b8" stroke="#17160f" stroke-width="1.2"/>
+          <text x="334" y="33" fill="#cbd5e1" font-size="8" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="end">UART</text>
+          <rect x="338" y="58" width="22" height="22" rx="3" fill="#64748b" stroke="#17160f" stroke-width="1.2"/>
+          <text x="334" y="73" fill="#94a3b8" font-size="8" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="end">USB</text>
+
+          <!-- Top Header Pins (at rel x = 16, 44, 72, 100, 128, 156, 184, 212, 240, 268, 296 -> abs x = 358..638) -->
+          <!-- Wait: align pin x=16 -> 358! So rel x = 16 + i*28 -->
+          <g font-size="8.5" font-weight="700" font-family="JetBrains Mono, monospace" fill="#f2ede4" text-anchor="middle">
+            <circle cx="16" cy="4" r="3.5" fill="#c98a12"/><text x="16" y="17">3V3</text>
+            <circle cx="44" cy="4" r="3.5" fill="#a855f7"/><text x="44" y="17">G4</text>
+            <circle cx="72" cy="4" r="3.5" fill="#a855f7"/><text x="72" y="17">G5</text>
+            <circle cx="100" cy="4" r="3.5" fill="#2e7a4e"/><text x="100" y="17">G6</text>
+            <circle cx="128" cy="4" r="3.5" fill="#2e7a4e"/><text x="128" y="17">G7</text>
+            <circle cx="156" cy="4" r="3.5" fill="#1f7a6b"/><text x="156" y="17">G10</text>
+            <circle cx="184" cy="4" r="3.5" fill="#2853c9"/><text x="184" y="17">G11</text>
+            <circle cx="212" cy="4" r="3.5" fill="#1f7a6b"/><text x="212" y="17">G12</text>
+            <circle cx="240" cy="4" r="3.5" fill="#2e7a4e"/><text x="240" y="17">G8</text>
+            <circle cx="268" cy="4" r="3.5" fill="#c98a12"/><text x="268" y="17">G9</text>
+          </g>
+
+          <!-- Bottom Header Pins -->
+          <g font-size="8.5" font-weight="700" font-family="JetBrains Mono, monospace" fill="#f2ede4" text-anchor="middle">
+            <circle cx="16" cy="94" r="3.5" fill="#d63c1c"/><text x="16" y="86">5V</text>
+            <circle cx="44" cy="94" r="3.5" fill="#7a756b"/><text x="44" y="86">GND</text>
+            <circle cx="100" cy="94" r="3.5" fill="#2853c9"/><text x="100" y="86">G17</text>
+            <circle cx="128" cy="94" r="3.5" fill="#2e7a4e"/><text x="128" y="86">G18</text>
+            <circle cx="156" cy="94" r="3.5" fill="#2853c9"/><text x="156" y="86">G15</text>
+            <circle cx="184" cy="94" r="3.5" fill="#2e7a4e"/><text x="184" y="86">G16</text>
+            <circle cx="296" cy="94" r="3.5" fill="#7a756b"/><text x="296" y="86">GND</text>
+          </g>
+        </g>
+
+        <!-- ====== BREADBOARD JUMPERS & RESISTORS ====== -->
+        <!-- 3.3V jumper from ESP32 (358, 258) to Top 3.3V rail (358, 158) -->
+        <path class="wire" data-group="power fsr env mic" stroke="#c98a12" d="M 358 258 L 358 158"/>
+        <!-- 5V jumper from ESP32 (358, 384) to Bottom +5V rail (358, 474) -->
+        <path class="wire" data-group="power" stroke="#d63c1c" d="M 358 384 L 358 474"/>
+        <!-- GND jumpers from ESP32 (386, 384) & (638, 384) to Bottom GND rail (492) -->
+        <path class="wire" data-group="power" stroke="#17160f" d="M 386 384 L 386 492"/>
+        <path class="wire" data-group="power" stroke="#17160f" d="M 638 384 L 638 492"/>
+
+        <!-- 2x 10kOhm Pull-Down Resistors on col 190 & col 246 to Top GND rail (176), bridged to G4(386) & G5(414) -->
+        ${renderResistorV(190, 258, 176, "#78350f", "#17160f", "#ea580c", "10kΩ", "fsr")}
+        <path class="wire" data-group="fsr" stroke="#7c3aed" d="M 190 258 L 386 258"/>
+        ${renderResistorV(246, 240, 176, "#78350f", "#17160f", "#ea580c", "10kΩ", "fsr")}
+        <path class="wire" data-group="fsr" stroke="#9333ea" d="M 246 240 L 414 240"/>
+
+        <!-- 2x 330Ohm Data Resistors: G6(442) -> col 302 (row b), G7(470) -> col 666 (row c) -->
+        ${renderResistorH(302, 442, 222, "#ea580c", "#ea580c", "#78350f", "330Ω", "led", 408)}
+        ${renderResistorH(470, 666, 240, "#ea580c", "#ea580c", "#78350f", "330Ω", "led", 638)}
+
+        <!-- ====== TOP EXTERNAL MODULES (y=16..106) ====== -->
+        <!-- 1. 2x FSR402 Pads (Top Left x=20..315) -->
+        <g class="mod-box" data-mod="fsr" data-group="fsr" onclick="clickModule('fsr')" transform="translate(20, 14)">
+          <rect class="mod-frame" width="295" height="92" rx="5" fill="#fbf9f4" stroke="#17160f" stroke-width="1.6"/>
+          <circle cx="42" cy="48" r="22" fill="#d63c1c" opacity="0.18" stroke="#d63c1c" stroke-width="2"/>
+          <circle cx="42" cy="48" r="14" fill="none" stroke="#d63c1c" stroke-width="1.2" stroke-dasharray="3 2"/>
+          <circle cx="96" cy="48" r="22" fill="#d63c1c" opacity="0.18" stroke="#d63c1c" stroke-width="2"/>
+          <circle cx="96" cy="48" r="14" fill="none" stroke="#d63c1c" stroke-width="1.2" stroke-dasharray="3 2"/>
+          <text x="132" y="28" fill="#17160f" font-size="11.5" font-weight="700" font-family="Be Vietnam Pro, sans-serif">2x Áp lực FSR402</text>
+          <text x="132" y="48" fill="#c98a12" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace">1 chân → Rail 3.3V</text>
+          <text x="132" y="66" fill="#7c3aed" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace">Chân kia → G4 / G5</text>
+          <text x="132" y="82" fill="#7a756b" font-size="9" font-family="JetBrains Mono, monospace">(gặp trở 10kΩ về GND)</text>
+        </g>
+        <!-- FSR Wires -->
+        <path class="wire" data-group="fsr" stroke="#c98a12" d="M 62 106 L 62 158 L 218 158"/>
+        <path class="wire" data-group="fsr" stroke="#7c3aed" d="M 116 106 L 116 122 L 190 122 L 190 204"/>
+        <path class="wire" data-group="fsr" stroke="#9333ea" d="M 142 106 L 142 114 L 246 114 L 246 204"/>
+
+        <!-- 2. 2x LED WS2812B Sticks (Top Mid x=340..695) -->
+        <g class="mod-box" data-mod="led" data-group="led" onclick="clickModule('led')" transform="translate(340, 14)">
+          <rect class="mod-frame" width="355" height="92" rx="5" fill="#fbf9f4" stroke="#17160f" stroke-width="1.6"/>
+          <text x="14" y="22" fill="#17160f" font-size="11.5" font-weight="700" font-family="Be Vietnam Pro, sans-serif">2x Dải LED WS2812B (DIN →)</text>
+          <!-- 8 mini LEDs strip 1 -->
+          <rect x="14" y="34" width="154" height="18" rx="3" fill="#17160f"/>
+          <g fill="#2e7a4e">
+            <rect x="20" y="38" width="10" height="10" rx="1"/><rect x="38" y="38" width="10" height="10" rx="1"/>
+            <rect x="56" y="38" width="10" height="10" rx="1"/><rect x="74" y="38" width="10" height="10" rx="1"/>
+            <rect x="92" y="38" width="10" height="10" rx="1"/><rect x="110" y="38" width="10" height="10" rx="1"/>
+            <rect x="128" y="38" width="10" height="10" rx="1"/><rect x="146" y="38" width="10" height="10" rx="1"/>
+          </g>
+          <!-- 8 mini LEDs strip 2 -->
+          <rect x="184" y="34" width="154" height="18" rx="3" fill="#17160f"/>
+          <g fill="#d63c1c">
+            <rect x="190" y="38" width="10" height="10" rx="1"/><rect x="208" y="38" width="10" height="10" rx="1"/>
+            <rect x="226" y="38" width="10" height="10" rx="1"/><rect x="244" y="38" width="10" height="10" rx="1"/>
+            <rect x="262" y="38" width="10" height="10" rx="1"/><rect x="280" y="38" width="10" height="10" rx="1"/>
+            <rect x="298" y="38" width="10" height="10" rx="1"/><rect x="316" y="38" width="10" height="10" rx="1"/>
+          </g>
+          <text x="14" y="75" fill="#2e7a4e" font-size="9.5" font-weight="600" font-family="JetBrains Mono, monospace">DIN#1 ← 330Ω(G6) | DIN#2 ← 330Ω(G7) | 5V &amp; GND từ Rail dưới</text>
+        </g>
+        <!-- LED Wires -->
+        <path class="wire" data-group="led" stroke="#2e7a4e" d="M 358 106 L 358 124 L 302 124 L 302 204"/>
+        <path class="wire" data-group="led" stroke="#15803d" d="M 666 106 L 666 204"/>
+        <path class="wire" data-group="led power" stroke="#d63c1c" d="M 340 82 L 326 82 L 326 130 L 116 130 L 116 513 L 274 513 L 274 474"/>
+
+        <!-- 3. Zone Sensors SHT31 + BH1750 + INMP441 (Top Right x=720..1020) -->
+        <g class="mod-box" data-mod="env" data-group="env mic" onclick="clickModule('env')" transform="translate(720, 14)">
+          <rect class="mod-frame" width="300" height="92" rx="5" fill="#fbf9f4" stroke="#17160f" stroke-width="1.6"/>
+          <text x="14" y="22" fill="#17160f" font-size="11.5" font-weight="700" font-family="Be Vietnam Pro, sans-serif">Cụm Môi Trường (3.3V!)</text>
+          <text x="14" y="42" fill="#2e7a4e" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace">SHT31+BH1750: SDA→G8 | SCL→G9</text>
+          <text x="14" y="61" fill="#1f7a6b" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace">INMP441: WS→G10 SCK→G11 SD→G12</text>
+          <text x="14" y="79" fill="#d63c1c" font-size="9.5" font-weight="700" font-family="JetBrains Mono, monospace">VDD → Rail 3.3V | L/R &amp; GND → GND</text>
+        </g>
+        <!-- Env + Mic Wires -->
+        <path class="wire" data-group="env mic" stroke="#c98a12" d="M 744 106 L 744 158 L 694 158"/>
+        <path class="wire" data-group="env mic" stroke="#17160f" d="M 762 106 L 762 176 L 694 176"/>
+        <path class="wire" data-group="env" stroke="#2e7a4e" d="M 784 106 L 784 128 L 582 128 L 582 204"/>
+        <path class="wire" data-group="env" stroke="#c98a12" d="M 804 106 L 804 136 L 610 136 L 610 204"/>
+        <path class="wire" data-group="mic" stroke="#1f7a6b" d="M 832 106 L 832 118 L 498 118 L 498 204"/>
+        <path class="wire" data-group="mic" stroke="#2853c9" d="M 852 106 L 852 112 L 526 112 L 526 204"/>
+        <path class="wire" data-group="mic" stroke="#0f766e" d="M 872 106 L 872 124 L 554 124 L 554 204"/>
+
+        <!-- ====== BOTTOM EXTERNAL MODULES (y=554..650) ====== -->
+        <!-- 1. Adapter 5V 2A (Bottom Left) -->
+        <g class="mod-box" data-mod="pwr1" data-group="power" onclick="clickModule('pwr1')" transform="translate(20, 554)">
+          <rect class="mod-frame" width="290" height="96" rx="5" fill="#fbf9f4" stroke="#d63c1c" stroke-width="1.8"/>
+          <text x="14" y="24" fill="#d63c1c" font-size="12" font-weight="700" font-family="Be Vietnam Pro, sans-serif">Adapter 5V – 2A + Jack DC</text>
+          <text x="14" y="46" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">Dây Đỏ (+5V) → Rail +5V dưới</text>
+          <text x="14" y="66" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">Dây Đen (GND) → Rail GND dưới</text>
+          <text x="14" y="84" fill="#7a756b" font-size="9.5" font-family="JetBrains Mono, monospace">Tụ 1000µF cắm sát +5V / GND</text>
+        </g>
+        <path class="wire" data-group="power" stroke="#d63c1c" d="M 190 554 L 190 474"/>
+        <path class="wire" data-group="power" stroke="#17160f" d="M 218 554 L 218 492"/>
+
+        <!-- 2. Radar #1 (Bottom Mid) -->
+        <g class="mod-box" data-mod="radar1" data-group="radar" onclick="clickModule('radar1')" transform="translate(345, 554)">
+          <rect class="mod-frame" width="315" height="96" rx="5" fill="#fbf9f4" stroke="#17160f" stroke-width="1.6"/>
+          <rect x="14" y="18" width="44" height="58" rx="3" fill="#0f172a"/>
+          <rect x="22" y="24" width="28" height="24" rx="2" fill="#eab308"/>
+          <text x="70" y="26" fill="#17160f" font-size="11.5" font-weight="700" font-family="Be Vietnam Pro, sans-serif">Radar LD2410C #1 (S01)</text>
+          <text x="70" y="46" fill="#d63c1c" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace">5V → Rail +5V | GND → Rail GND</text>
+          <text x="70" y="66" fill="#2853c9" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace">TX → GPIO 17 (cắm cột G17)</text>
+          <text x="70" y="83" fill="#2e7a4e" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace">RX → GPIO 18 (cắm cột G18)</text>
+        </g>
+        <path class="wire" data-group="radar" data-mod="radar1" stroke="#d63c1c" d="M 386 554 L 386 474"/>
+        <path class="wire" data-group="radar" data-mod="radar1" stroke="#17160f" d="M 414 554 L 414 492"/>
+        <path class="wire" data-group="radar" data-mod="radar1" stroke="#2853c9" d="M 442 554 L 442 438"/>
+        <path class="wire" data-group="radar" data-mod="radar1" stroke="#2e7a4e" d="M 470 554 L 470 438"/>
+
+        <!-- 3. Radar #2 (Bottom Right) -->
+        <g class="mod-box" data-mod="radar2" data-group="radar" onclick="clickModule('radar2')" transform="translate(690, 554)">
+          <rect class="mod-frame" width="330" height="96" rx="5" fill="#fbf9f4" stroke="#17160f" stroke-width="1.6"/>
+          <rect x="14" y="18" width="44" height="58" rx="3" fill="#0f172a"/>
+          <rect x="22" y="24" width="28" height="24" rx="2" fill="#eab308"/>
+          <text x="70" y="26" fill="#17160f" font-size="11.5" font-weight="700" font-family="Be Vietnam Pro, sans-serif">Radar LD2410C #2 (S02)</text>
+          <text x="70" y="46" fill="#d63c1c" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace">5V → Rail +5V | GND → Rail GND</text>
+          <text x="70" y="66" fill="#2853c9" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace">TX → GPIO 15 (cắm cột G15)</text>
+          <text x="70" y="83" fill="#2e7a4e" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace">RX → GPIO 16 (cắm cột G16)</text>
+        </g>
+        <path class="wire" data-group="radar" data-mod="radar2" stroke="#d63c1c" d="M 722 554 L 722 474"/>
+        <path class="wire" data-group="radar" data-mod="radar2" stroke="#17160f" d="M 750 554 L 750 492"/>
+        <path class="wire" data-group="radar" data-mod="radar2" stroke="#2853c9" d="M 778 554 L 778 532 L 498 532 L 498 438"/>
+        <path class="wire" data-group="radar" data-mod="radar2" stroke="#2e7a4e" d="M 806 554 L 806 540 L 526 540 L 526 438"/>
+      </svg>`;
+    }
+
+    function getBreadboardNode2SVG() {
+      /*
+        ESP32-S3 #2 Horizontal Pins (cols x = 358 + i*28):
+          Top:    358(3V3), 386(G4 BTN), 414(G5 BUZZ), 442(G6 LED_OK), 470(G7 LED_ERR), 582(G8 SDA), 610(G9 SCL)
+          Bottom: 358(5V),  386(GND), 442(G10 SS), 470(G11 MOSI), 498(G12 SCK), 526(G13 MISO), 554(G14 RST), 638(GND)
+      */
+      return `
+      <svg viewBox="0 0 1040 675" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="bbGrid2" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e4ddd0" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="1040" height="675" fill="url(#bbGrid2)"/>
+
+        ${renderDualBreadboardShell("NODE #2 · GATE RFID")}
+
+        <!-- Common GND bridge & Power Jumpers -->
+        <path class="wire" data-group="power2" stroke="#17160f" d="M 190 176 L 190 191 L 128 191 L 128 507 L 190 507 L 190 492"/>
+        <path class="wire" data-group="power2 rfid oled" stroke="#c98a12" d="M 358 258 L 358 158"/>
+        <path class="wire" data-group="power2" stroke="#d63c1c" d="M 358 384 L 358 474"/>
+        <path class="wire" data-group="power2" stroke="#17160f" d="M 386 384 L 386 492"/>
+        <path class="wire" data-group="power2" stroke="#17160f" d="M 638 384 L 638 492"/>
+
+        <!-- ====== HORIZONTAL ESP32-S3 #2 ====== -->
+        <g transform="translate(342, 272)">
+          <rect x="0" y="0" width="356" height="98" rx="6" fill="#17160f" stroke="#17160f" stroke-width="2"/>
+          <rect x="12" y="18" width="78" height="62" rx="3" fill="#475569" stroke="#cbd5e1" stroke-width="1"/>
+          <text x="51" y="46" fill="#f8fafc" font-size="9" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">ESP32-S3</text>
+          <text x="51" y="60" fill="#86efac" font-size="8" font-family="JetBrains Mono, monospace" text-anchor="middle">GATE NODE</text>
+          <rect x="338" y="18" width="22" height="22" rx="3" fill="#94a3b8" stroke="#17160f" stroke-width="1.2"/>
+          <text x="334" y="33" fill="#cbd5e1" font-size="8" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="end">UART</text>
+          <rect x="338" y="58" width="22" height="22" rx="3" fill="#64748b" stroke="#17160f" stroke-width="1.2"/>
+          <text x="334" y="73" fill="#94a3b8" font-size="8" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="end">USB</text>
+
+          <!-- Top Pins -->
+          <g font-size="8.5" font-weight="700" font-family="JetBrains Mono, monospace" fill="#f2ede4" text-anchor="middle">
+            <circle cx="16" cy="4" r="3.5" fill="#c98a12"/><text x="16" y="17">3V3</text>
+            <circle cx="44" cy="4" r="3.5" fill="#a8a296"/><text x="44" y="17">G4</text>
+            <circle cx="72" cy="4" r="3.5" fill="#a855f7"/><text x="72" y="17">G5</text>
+            <circle cx="100" cy="4" r="3.5" fill="#2e7a4e"/><text x="100" y="17">G6</text>
+            <circle cx="128" cy="4" r="3.5" fill="#d63c1c"/><text x="128" y="17">G7</text>
+            <circle cx="240" cy="4" r="3.5" fill="#2e7a4e"/><text x="240" y="17">G8</text>
+            <circle cx="268" cy="4" r="3.5" fill="#c98a12"/><text x="268" y="17">G9</text>
+          </g>
+
+          <!-- Bottom Pins -->
+          <g font-size="8.5" font-weight="700" font-family="JetBrains Mono, monospace" fill="#f2ede4" text-anchor="middle">
+            <circle cx="16" cy="94" r="3.5" fill="#d63c1c"/><text x="16" y="86">5V</text>
+            <circle cx="44" cy="94" r="3.5" fill="#7a756b"/><text x="44" y="86">GND</text>
+            <circle cx="100" cy="94" r="3.5" fill="#2853c9"/><text x="100" y="86">G10</text>
+            <circle cx="128" cy="94" r="3.5" fill="#2e7a4e"/><text x="128" y="86">G11</text>
+            <circle cx="156" cy="94" r="3.5" fill="#c98a12"/><text x="156" y="86">G12</text>
+            <circle cx="184" cy="94" r="3.5" fill="#7c3aed"/><text x="184" y="86">G13</text>
+            <circle cx="212" cy="94" r="3.5" fill="#7a756b"/><text x="212" y="86">G14</text>
+            <circle cx="296" cy="94" r="3.5" fill="#7a756b"/><text x="296" y="86">GND</text>
+          </g>
+        </g>
+
+        <!-- ====== ON-BREADBOARD COMPONENTS: BUTTON, 2x 220Ω + LEDs ====== -->
+        <!-- Tactile Push Button (IN/OUT) straddling gap at col 274 & 302 -->
+        <g class="mod-box" data-mod="io" data-group="io" onclick="clickModule('io')">
+          <rect x="266" y="302" width="44" height="40" rx="4" fill="#cbd5e1" stroke="#17160f" stroke-width="1.5"/>
+          <circle cx="288" cy="322" r="11" fill="#17160f"/>
+          <text x="288" y="355" fill="#17160f" font-size="8.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">IN/OUT</text>
+        </g>
+        <path class="wire" data-group="io" stroke="#7a756b" d="M 302 276 L 302 240 L 386 240 L 386 258"/>
+        <path class="wire" data-group="io" stroke="#17160f" d="M 274 276 L 274 176"/>
+
+        <!-- 2x 220Ohm Resistors + Green/Red LEDs on Right Spare Columns (750, 806) -->
+        ${renderResistorH(442, 750, 222, "#dc2626", "#dc2626", "#78350f", "220Ω", "io", 696)}
+        ${renderResistorH(470, 806, 240, "#dc2626", "#dc2626", "#78350f", "220Ω", "io", 642)}
+        <!-- Green LED at x=750 -->
+        <g class="mod-box" data-mod="io" data-group="io" onclick="clickModule('io')">
+          <circle cx="750" cy="204" r="9" fill="#2e7a4e" stroke="#17160f" stroke-width="1.5"/>
+          <text x="750" y="191" fill="#2e7a4e" font-size="8.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">OK</text>
+        </g>
+        <path class="wire" data-group="io" stroke="#17160f" d="M 750 195 L 750 176"/>
+        <!-- Red LED at x=806 -->
+        <g class="mod-box" data-mod="io" data-group="io" onclick="clickModule('io')">
+          <circle cx="806" cy="204" r="9" fill="#d63c1c" stroke="#17160f" stroke-width="1.5"/>
+          <text x="806" y="191" fill="#d63c1c" font-size="8.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">ERR</text>
+        </g>
+        <path class="wire" data-group="io" stroke="#17160f" d="M 806 195 L 806 176"/>
+
+        <!-- ====== TOP EXTERNAL MODULES ====== -->
+        <!-- Module Còi 3 chân (Top Left x=20..500) -->
+        <g class="mod-box" data-mod="io" data-group="io" onclick="clickModule('io')" transform="translate(20, 14)">
+          <rect class="mod-frame" width="480" height="92" rx="5" fill="#fbf9f4" stroke="#17160f" stroke-width="1.6"/>
+          <!-- 3-pin Buzzer PCB icon -->
+          <rect x="14" y="11" width="84" height="70" rx="4" fill="#1e293b" stroke="#17160f" stroke-width="1.2"/>
+          <circle cx="56" cy="34" r="16" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+          <circle cx="56" cy="34" r="4.5" fill="#cbd5e1"/>
+          <!-- 3 header pins: VCC, GND, I/O -->
+          <g font-size="7.5" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">
+            <circle cx="34" cy="70" r="3.2" fill="#c98a12"/><text x="34" y="62" fill="#fde68a">VCC</text>
+            <circle cx="56" cy="70" r="3.2" fill="#94a3b8"/><text x="56" y="62" fill="#e2e8f0">GND</text>
+            <circle cx="78" cy="70" r="3.2" fill="#a855f7"/><text x="78" y="62" fill="#d8b4fe">I/O</text>
+          </g>
+          <text x="114" y="25" fill="#17160f" font-size="11.5" font-weight="700" font-family="Be Vietnam Pro, sans-serif">Module Còi 3 chân (Active Buzzer)</text>
+          <text x="114" y="45" fill="#c98a12" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace">VCC → Rail 3.3V | GND → Rail GND</text>
+          <text x="114" y="64" fill="#7c3aed" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace">I/O (S) → GPIO 5 (cắm cột G5)</text>
+          <text x="114" y="81" fill="#7a756b" font-size="9" font-family="JetBrains Mono, monospace">Chú ý: nếu còi kêu ngược thì đảo HIGH ↔ LOW trong code</text>
+        </g>
+        <path class="wire" data-group="io" stroke="#c98a12" d="M 218 106 L 218 158"/>
+        <path class="wire" data-group="io" stroke="#17160f" d="M 246 106 L 246 176"/>
+        <path class="wire" data-group="io" stroke="#7c3aed" d="M 302 106 L 302 126 L 414 126 L 414 204"/>
+
+        <!-- OLED SSD1306 (Top Right x=550..1015) -->
+        <g class="mod-box" data-mod="oled" data-group="oled" onclick="clickModule('oled')" transform="translate(550, 14)">
+          <rect class="mod-frame" width="465" height="92" rx="5" fill="#fbf9f4" stroke="#17160f" stroke-width="1.6"/>
+          <rect x="14" y="14" width="136" height="64" rx="4" fill="#0f172a" stroke="#17160f" stroke-width="1.2"/>
+          <text x="82" y="38" fill="#38bdf8" font-size="9" font-weight="700" font-family="JetBrains Mono, monospace" text-anchor="middle">THU VIEN THONG MINH</text>
+          <text x="82" y="56" fill="#86efac" font-size="9" font-family="JetBrains Mono, monospace" text-anchor="middle">CHO TRONG: 14</text>
+          <text x="166" y="28" fill="#17160f" font-size="11.5" font-weight="700" font-family="Be Vietnam Pro, sans-serif">OLED 0.96" SSD1306 (I2C)</text>
+          <text x="166" y="49" fill="#c98a12" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace">VCC → Rail 3.3V | GND → GND</text>
+          <text x="166" y="69" fill="#2e7a4e" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace">SDA → GPIO 8 | SCL → GPIO 9</text>
+        </g>
+        <path class="wire" data-group="oled" stroke="#c98a12" d="M 722 106 L 722 158"/>
+        <path class="wire" data-group="oled" stroke="#17160f" d="M 778 106 L 778 176"/>
+        <path class="wire" data-group="oled" stroke="#2e7a4e" d="M 582 106 L 582 204"/>
+        <path class="wire" data-group="oled" stroke="#c98a12" d="M 610 106 L 610 204"/>
+
+        <!-- ====== BOTTOM EXTERNAL MODULES ====== -->
+        <!-- Adapter 5V #2 (Bottom Left) -->
+        <g class="mod-box" data-mod="power2" data-group="power2" onclick="clickModule('power2')" transform="translate(20, 554)">
+          <rect class="mod-frame" width="290" height="96" rx="5" fill="#fbf9f4" stroke="#d63c1c" stroke-width="1.8"/>
+          <text x="14" y="24" fill="#d63c1c" font-size="12" font-weight="700" font-family="Be Vietnam Pro, sans-serif">Adapter 5V – 2A #2</text>
+          <text x="14" y="46" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">Dây Đỏ (+5V) → Rail +5V dưới</text>
+          <text x="14" y="66" fill="#3b3930" font-size="10.5" font-family="JetBrains Mono, monospace">Dây Đen (GND) → Rail GND dưới</text>
+          <text x="14" y="84" fill="#7a756b" font-size="9.5" font-family="JetBrains Mono, monospace">RC522 &amp; OLED lấy 3.3V trên Rail</text>
+        </g>
+        <path class="wire" data-group="power2" stroke="#d63c1c" d="M 190 554 L 190 474"/>
+        <path class="wire" data-group="power2" stroke="#17160f" d="M 218 554 L 218 492"/>
+
+        <!-- RFID RC522 Module (Bottom Right x=350..1020) -->
+        <g class="mod-box" data-mod="rfid" data-group="rfid" onclick="clickModule('rfid')" transform="translate(350, 554)">
+          <rect class="mod-frame" width="670" height="96" rx="5" fill="#fbf9f4" stroke="#2853c9" stroke-width="1.8"/>
+          <!-- Blue PCB icon with coil -->
+          <rect x="14" y="14" width="68" height="68" rx="4" fill="#1d4ed8"/>
+          <rect x="24" y="24" width="48" height="48" rx="2" fill="none" stroke="#93c5fd" stroke-width="1.5"/>
+          <rect x="32" y="32" width="32" height="32" rx="2" fill="none" stroke="#93c5fd" stroke-width="1.2"/>
+          <text x="98" y="24" fill="#17160f" font-size="12" font-weight="700" font-family="Be Vietnam Pro, sans-serif">Module RFID RC522 (13.56 MHz · FSPI)</text>
+          <text x="98" y="45" fill="#d63c1c" font-size="10.5" font-weight="700" font-family="JetBrains Mono, monospace">⚠ 3.3V → Rail 3.3V (CẤM 5V!) | GND → Rail GND</text>
+          <text x="98" y="66" fill="#2853c9" font-size="10" font-weight="600" font-family="JetBrains Mono, monospace">SS→G10 | MOSI→G11 | SCK→G12 | MISO→G13 | RST→G14</text>
+          <text x="98" y="84" fill="#7a756b" font-size="9.5" font-family="JetBrains Mono, monospace">Cắm thẳng 5 dây SPI vào cột f..j dưới thân ESP32-S3</text>
+        </g>
+        <!-- RC522 Wires straight to ESP32-S3 bottom columns (442, 470, 498, 526, 554) + 3.3V/GND -->
+        <path class="wire" data-group="rfid" stroke="#c98a12" d="M 862 554 L 862 158"/>
+        <path class="wire" data-group="rfid" stroke="#17160f" d="M 806 554 L 806 492"/>
+        <path class="wire" data-group="rfid" stroke="#2853c9" d="M 442 554 L 442 438"/>
+        <path class="wire" data-group="rfid" stroke="#2e7a4e" d="M 470 554 L 470 438"/>
+        <path class="wire" data-group="rfid" stroke="#c98a12" d="M 498 554 L 498 438"/>
+        <path class="wire" data-group="rfid" stroke="#7c3aed" d="M 526 554 L 526 438"/>
+        <path class="wire" data-group="rfid" stroke="#7a756b" d="M 554 554 L 554 438"/>
+      </svg>`;
+    }
+
+    function applyWireHighlight() {
+      const stage = document.getElementById("svgContainer");
+      const wires = stage.querySelectorAll(".wire");
+      const mods = stage.querySelectorAll(".mod-box");
+
+      wires.forEach(w => {
+        const groups = (w.dataset.group || "").split(" ");
+        const modMatch = selectedMod && w.dataset.mod ? w.dataset.mod === selectedMod : true;
+        if (currentFilter === "all") {
+          w.classList.remove("dimmed", "highlighted");
+        } else if (groups.includes(currentFilter) && modMatch) {
+          w.classList.remove("dimmed");
+          w.classList.add("highlighted");
+        } else {
+          w.classList.remove("highlighted");
+          w.classList.add("dimmed");
+        }
+      });
+
+      mods.forEach(m => {
+        const g = m.dataset.group;
+        const mk = m.dataset.mod;
+        m.classList.toggle("selected", selectedMod === mk || (currentFilter !== "all" && !selectedMod && g === currentFilter));
+        if (currentFilter === "all") {
+          m.classList.remove("dimmed");
+        } else {
+          const match = selectedMod ? mk === selectedMod : g === currentFilter;
+          m.classList.toggle("dimmed", !match);
+        }
+      });
+    }
+
+    function renderInspector() {
+      const panel = document.getElementById("inspectorPanel");
+      const nodeData = NODES[currentNode];
+
+      let modKeys = Object.keys(nodeData.modules);
+      if (selectedMod) modKeys = [selectedMod];
+      else if (currentFilter !== "all") modKeys = modKeys.filter(k => nodeData.modules[k].group === currentFilter);
+
+      if (currentFilter === "all" && !selectedMod) {
+        let rowsHtml = "";
+        Object.values(nodeData.modules).forEach(m => {
+          m.pins.forEach(p => {
+            rowsHtml += `<tr>
+              <td><strong>${m.name.split(" (")[0]}</strong><br/><span style="color:var(--muted);font-size:11.5px;">${p[0]}</span></td>
+              <td><code>${p[1]}</code></td>
+              <td>${p[2]}</td>
+            </tr>`;
+          });
+        });
+        panel.innerHTML = `
+          <div class="card-kicker">Pinout Inspector</div>
+          <h3 style="font-family:var(--serif); font-size:24px; font-weight:400; margin-bottom:6px;">Bảng tổng hợp chân cắm</h3>
+          <p style="font-size:12.5px; color:var(--ink2); margin-bottom:12px;">
+            💡 Click trực tiếp vào một khối linh kiện trên bản vẽ bên trái để lọc riêng đường dây và ghi chú kỹ thuật.
+          </p>
+          <div class="table-wrap" style="max-height: 455px; overflow-y: auto;">
+            <table>
+              <thead><tr><th>Module / Chân</th><th>Đấu tới ESP32</th><th>Dây</th></tr></thead>
+              <tbody>${rowsHtml}</tbody>
+            </table>
+          </div>`;
+        return;
+      }
+
+      panel.innerHTML = modKeys.map(k => {
+        const m = nodeData.modules[k];
+        return `
+          <div style="margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+              <h3 style="font-family:var(--serif); font-size:23px; font-weight:400;">${m.name}</h3>
+              <span class="tag ${m.tagClass}">${m.voltage}</span>
+            </div>
+            <p style="font-size:13px; color:var(--ink2); margin-bottom:12px;">${m.summary}</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Chân Module</th><th>Nối tới</th><th>Màu</th><th>Ghi chú</th></tr></thead>
+                <tbody>
+                  ${m.pins.map(p => `<tr>
+                    <td><strong>${p[0]}</strong></td>
+                    <td><code>${p[1]}</code></td>
+                    <td>${p[2]}</td>
+                    <td style="font-size:12px; color:var(--ink2);">${p[3]}</td>
+                  </tr>`).join("")}
+                </tbody>
+              </table>
+            </div>
+          </div>`;
+      }).join('<hr style="border:none;border-top:1px solid var(--rule);margin:14px 0;"/>') +
+      `<button class="btn" style="width:100%;justify-content:center;" onclick="setWireFilter('all')">👁 Hiện toàn bộ sơ đồ</button>`;
+    }
+
+    function renderWiringTab() {
+      const container = document.getElementById("svgContainer");
+      if (diagramMode === "breadboard") {
+        container.innerHTML = currentNode === "node1" ? getBreadboardNode1SVG() : getBreadboardNode2SVG();
+      } else {
+        container.innerHTML = currentNode === "node1" ? getNode1SVG() : getNode2SVG();
+      }
+      renderFilterChips();
+      applyWireHighlight();
+      renderInspector();
+    }
+
+    /* =========================================================================
+       TAB 2: METRO STEP RAIL & WIZARD
+       ========================================================================= */
+    function selectStep(idx) {
+      appState.activeStep = idx;
+      saveState();
+      renderMetroRail();
+      renderStepContent();
+    }
+
+    function renderMetroRail() {
+      const rail = document.getElementById("metroRail");
+      rail.innerHTML = STEPS.map((s, idx) => {
+        const allDone = s.items.every((_, i) => appState.checks[`step_${idx}_${i}`]);
+        const active = (appState.activeStep || 0) === idx;
+        return `
+          <button class="metro-step ${active ? 'active' : ''} ${allDone ? 'done' : ''}" onclick="selectStep(${idx})">
+            <span class="metro-dot">${allDone ? '✓' : idx + 1}</span>
+            <span class="metro-label">${s.short}</span>
+          </button>`;
+      }).join("");
+    }
+
+    function renderStepContent() {
+      const idx = appState.activeStep || 0;
+      const s = STEPS[idx];
+      const box = document.getElementById("stepContent");
+
+      const itemsHtml = s.items.map((text, i) => {
+        const key = `step_${idx}_${i}`;
+        const checked = !!appState.checks[key];
+        return `
+          <label class="checklist-item ${checked ? 'done' : ''}">
+            <input type="checkbox" class="chk" ${checked ? 'checked' : ''} onchange="toggleCheck('${key}')" />
+            <div style="font-size:14px; font-weight:${checked ? '400' : '600'}; ${checked ? 'text-decoration:line-through;opacity:0.65;' : ''}">${text}</div>
+          </label>`;
+      }).join("");
+
+      box.innerHTML = `
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:14px; margin-bottom:14px;">
+          <div>
+            <div class="card-kicker">Giai đoạn ${idx + 1} / ${STEPS.length}</div>
+            <h2 class="card-serif-title">${s.title}</h2>
+            <p style="font-size:14px; color:var(--ink2); margin-top:4px;">${s.subtitle}</p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn" ${idx === 0 ? 'disabled' : `onclick="selectStep(${idx - 1})"`}>← Trước</button>
+            <button class="btn btn-accent" ${idx === STEPS.length - 1 ? 'disabled' : `onclick="selectStep(${idx + 1})"`}>Tiếp →</button>
+          </div>
+        </div>
+
+        <div class="note-box danger">
+          <b class="title">⚠ Lưu ý an toàn bắt buộc</b>
+          ${s.warning}
+        </div>
+
+        <div style="margin-top:16px;">${itemsHtml}</div>`;
+    }
+
+    /* =========================================================================
+       TAB 5: BOM TABLE
+       ========================================================================= */
+    function renderBomTable() {
+      const tbody = document.getElementById("bomTableBody");
+      tbody.innerHTML = BOM_ITEMS.map(item => {
+        const key = `bom_${item.id}`;
+        const checked = !!appState.checks[key];
+        return `
+          <tr class="bom-row ${checked ? 'checked' : ''}" onclick="toggleCheck('${key}')">
+            <td onclick="event.stopPropagation()"><input type="checkbox" class="chk" ${checked ? 'checked' : ''} onchange="toggleCheck('${key}')" /></td>
+            <td class="mono"><strong>${String(item.id).padStart(2, '0')}</strong></td>
+            <td class="bom-name"><strong>${item.name}</strong></td>
+            <td><code>${item.qty}</code></td>
+            <td><span class="tag ${item.vClass}">${item.volt}</span></td>
+            <td class="mono" style="font-size:12px;">${item.node}</td>
+            <td style="font-size:12.5px; color:var(--ink2);">${item.note}</td>
+          </tr>`;
+      }).join("");
+    }
+
+    /* =========================================================================
+       TAB 4: SENSOR FUSION & LED SIMULATOR
+       ========================================================================= */
+    function applyPreset(p) {
+      const fsr = document.getElementById("simFsr");
+      const dist = document.getElementById("simDist");
+      const eng = document.getElementById("simEnergy");
+      if (p === "free") { fsr.value = 40; dist.value = 135; eng.value = 5; simServerState = "FREE"; }
+      else if (p === "sit") { fsr.value = 2150; dist.value = 48; eng.value = 64; simServerState = "OCCUPIED"; }
+      else if (p === "bag") { fsr.value = 1650; dist.value = 130; eng.value = 4; simServerState = "AWAY"; }
+      else if (p === "neighbor") { fsr.value = 35; dist.value = 100; eng.value = 58; simServerState = "FREE"; }
+      updateSim();
+    }
+
+    function setServerState(st) {
+      simServerState = st;
+      updateSim();
+    }
+
+    function updateSim() {
+      const fsrAdc = parseInt(document.getElementById("simFsr").value, 10);
+      const distCm = parseInt(document.getElementById("simDist").value, 10);
+      const stillE = parseInt(document.getElementById("simEnergy").value, 10);
+
+      const hasFsr = fsrAdc >= 800;
+      const hasRadar = distCm <= 75 && stillE >= 25;
+
+      document.getElementById("simFsrVal").textContent = `${fsrAdc} (${hasFsr ? 'CÓ LỰC ÉP' : 'KHÔNG'})`;
+      document.getElementById("simDistVal").textContent = `${distCm} cm (${distCm <= 75 ? '≤ 0.75m OK' : 'NGOÀI 0.75m'})`;
+      document.getElementById("simEnergyVal").textContent = `${stillE} (${stillE >= 25 ? 'CÓ HÔ HẤP' : 'TĨNH VÔ TRI'})`;
+
+      let fusionCode = "ABSENT";
+      let fusionDesc = "Không có người, không có đồ — Đếm thời gian vắng";
+      let stampColor = "var(--muted)";
+
+      if (hasFsr && hasRadar) {
+        fusionCode = "PRESENT";
+        fusionDesc = "Có người đang ngồi thực sự — Duy trì OCCUPIED";
+        stampColor = "var(--real)";
+      } else if (hasFsr && !hasRadar) {
+        fusionCode = "ABSENT_ITEM";
+        fusionDesc = "Chỉ có đồ vật giữ chỗ ảo — Báo 'còn đồ' cho thủ thư";
+        stampColor = "var(--accent)";
+      } else if (!hasFsr && hasRadar) {
+        fusionCode = "PRESENT · LOW";
+        fusionDesc = "Người đứng gần / ngồi lệch ghế — Không đổi trạng thái";
+        stampColor = "var(--link)";
+      }
+
+      const stamp = document.getElementById("simFusionStamp");
+      stamp.textContent = fusionCode;
+      stamp.style.color = stampColor;
+      document.getElementById("simFusionDesc").textContent = fusionDesc;
+
+      const orb = document.getElementById("simLedOrb");
+      orb.className = "led-orb";
+      let ledText = "";
+      let hintText = "";
+
+      if (simServerState === "FREE") {
+        orb.style.background = "#2e7a4e";
+        orb.style.boxShadow = "0 0 12px rgba(46,122,78,0.55)";
+        ledText = "FREE — LED Xanh lá";
+        hintText = "Chỗ trống, sẵn sàng đặt hoặc ngồi walk-in";
+      } else if (simServerState === "RESERVED") {
+        orb.style.background = "#eab308";
+        orb.style.boxShadow = "0 0 12px rgba(234,179,8,0.6)";
+        ledText = "RESERVED — LED Vàng";
+        hintText = hasRadar || hasFsr ? "Đủ điều kiện xác thực kép 60s khi quét QR!" : "Chờ sinh viên tới check-in (tối đa 15 phút)";
+      } else if (simServerState === "OCCUPIED") {
+        orb.style.background = "#d63c1c";
+        orb.style.boxShadow = "0 0 12px rgba(214,60,28,0.6)";
+        ledText = "OCCUPIED — LED Đỏ";
+        hintText = fusionCode.startsWith("ABSENT") ? "⚠ Đang đếm 5 phút vắng liên tục để chuyển AWAY" : "Phiên ngồi hợp lệ";
+      } else if (simServerState === "AWAY") {
+        orb.style.background = "#f97316";
+        orb.style.boxShadow = "0 0 12px rgba(249,115,22,0.6)";
+        orb.classList.add("blink-away");
+        ledText = "AWAY — LED Cam nhấp nháy";
+        hintText = fusionCode === "ABSENT_ITEM" ? "Quá 20p sẽ giải phóng + gắn nhãn 'Chờ dọn đồ'" : "Đang tạm vắng (20p · 30p buổi trưa)";
+      } else {
+        orb.style.background = "#7c3aed";
+        orb.style.boxShadow = "0 0 12px rgba(124,58,237,0.55)";
+        ledText = "DISABLED — LED Tím";
+        hintText = "Chỗ ngồi đang khóa bảo trì";
+      }
+
+      document.getElementById("simSeatState").textContent = ledText;
+      document.getElementById("simActionHint").textContent = hintText;
+
+      const payload = {
+        ts: Math.floor(Date.now() / 1000),
+        state: fusionCode === "PRESENT · LOW" ? "PRESENT_LOW" : fusionCode,
+        seat_state: simServerState,
+        fsr: hasFsr ? 1 : 0,
+        fsr_adc: fsrAdc,
+        radar: hasRadar ? 1 : 0,
+        dist_cm: distCm,
+        move_e: hasRadar ? Math.min(100, Math.round(stillE * 0.55)) : 3,
+        still_e: stillE,
+        rssi: -58
+      };
+      document.getElementById("simMqttJson").textContent = JSON.stringify(payload, null, 2);
+    }
+
+    function copyCode(id, btn) {
+      const txt = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(txt).then(() => {
+        const old = btn.textContent;
+        btn.textContent = "✓ Đã Copy";
+        setTimeout(() => btn.textContent = old, 1500);
+      });
+    }
+
+    // INIT & HASH SUPPORT
+    renderWiringTab();
+    renderMetroRail();
+    renderStepContent();
+    renderBomTable();
+    updateSim();
+    updateGlobalProgress();
+
+    (function applyHashRoute() {
+      const h = (location.hash || "").replace("#", "");
+      if (!h) return;
+      if (h === "node2") {
+        selectNode("node2");
+        return;
+      }
+      if (h === "bb1") {
+        setDiagramMode("breadboard");
+        return;
+      }
+      if (h === "bb2") {
+        diagramMode = "breadboard";
+        document.getElementById("btnModeSch").classList.remove("active");
+        document.getElementById("btnModeBB").classList.add("active");
+        selectNode("node2");
+        return;
+      }
+      const tabMap = { wiring: 0, steps: 1, mechanical: 2, simulator: 3, bom: 4, code: 5 };
+      if (h in tabMap) {
+        const btns = document.querySelectorAll(".nav-tab");
+        if (btns[tabMap[h]]) switchTab(h, btns[tabMap[h]]);
+      }
+    })();
+  </script>
+</body>
+</html>

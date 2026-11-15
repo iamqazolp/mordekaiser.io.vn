@@ -15,6 +15,14 @@
     {
       "source": "/study-hub/",
       "destination": "/qare/index.html"
+    },
+    {
+      "source": "/ct-demo",
+      "destination": "/ct-demo/index.html"
+    },
+    {
+      "source": "/ct-demo/",
+      "destination": "/ct-demo/index.html"
     }
   ]
 }

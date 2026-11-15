@@ -987,12 +987,16 @@ function renderJob(job) {
       : (final.tag === 'Needs Review' ? 'review' : 'clean');
     const per1k = (Number(final.total_cost_usd || 0) * 1000).toFixed(2);
     const retryNote = final.retries > 0 ? `<div class="metric-box"><div class="metric-k">API Retries</div><div class="metric-v" style="color:var(--amber);">${final.retries}</div></div>` : '';
+    const advisoryNote = final.safety_advisory
+      ? `<div style="margin-top:8px;"><span class="badge badge-amber">⚠ ${esc(final.safety_advisory)}</span></div>`
+      : '';
     els.verdictMount.innerHTML = `
       <div class="verdict-banner ${cls}">
         <div>
           <div class="kicker" style="margin-bottom:2px;color:inherit;opacity:0.8;">${esc(final.resolved_at)}</div>
           <div class="verdict-tag">${esc(final.tag)}</div>
           <div style="font-size:13.5px;color:var(--ink-2);max-width:600px;">${esc(final.summary)}</div>
+          ${advisoryNote}
         </div>
         <div class="verdict-metrics">
           <div class="metric-box"><div class="metric-k">Total Latency</div><div class="metric-v">${esc(final.elapsed_sec)}s</div></div>
@@ -1033,7 +1037,17 @@ function renderJob(job) {
       ? `<div class="kv-row">${s4.reasons.map(r => `<span class="badge badge-amber">${esc(r)}</span>`).join('')}</div>`
       : '';
     let hHtml = '<div class="subpanel"><h4>Gemini 4 Hydrogen (Audio) <span class="badge badge-muted">Skipped</span></h4><p class="evidence">Terra resolved with clear confidence and no rare-language acoustic fallback was required.</p></div>';
-    if (h) {
+    if (h && h.status === 'degraded_unavailable') {
+      hHtml = `
+        <div class="subpanel">
+          <h4><span>Gemini 4 Hydrogen · Direct Audio</span><span class="badge badge-amber">Degraded · Unavailable</span></h4>
+          <div class="kv-row" style="margin-bottom:6px;">
+            <span class="kv-chip">${esc(h.elapsed_sec ?? '—')}s · $0.00000</span>
+          </div>
+          <p class="evidence">${esc(h.error || 'Temporary API quota/rate limit unavailable; pipeline degraded conservatively.')}</p>
+        </div>
+      `;
+    } else if (h) {
       const hBadge = hr.verdict === 'relevant' ? '<span class="badge badge-viol">Violative</span>' : '<span class="badge badge-clean">Clean</span>';
       hHtml = `
         <div class="subpanel">
@@ -1108,6 +1122,9 @@ function renderJob(job) {
     const introHtml = tx.spoken_intro
       ? `<div class="intro-box"><strong>Spoken Intro Detected:</strong> ${esc(tx.spoken_intro)}</div>`
       : '';
+    const segHtml = tx.spoken_segments
+      ? `<div class="intro-box"><strong>Spoken Mid-Track Segment Detected:</strong> ${esc(tx.spoken_segments)}</div>`
+      : '';
     const expCls = state.txExpanded ? ' expanded' : '';
     const expLabel = state.txExpanded ? 'Collapse Box' : 'Expand Full Lyrics';
     slotHtml.stage2 = `
@@ -1124,7 +1141,7 @@ function renderJob(job) {
           ${s2.hedged ? '<span class="badge badge-amber">Tail Hedge Failover</span>' : ''}
           <button type="button" class="tx-toggle-btn">${expLabel}</button>
         </div>
-        ${introHtml}
+        ${introHtml}${segHtml}
         <div class="tx-cols">
           <div>
             <div class="tx-label">Verbatim Original Script</div>
@@ -1147,8 +1164,13 @@ function renderJob(job) {
       ['violent_jihad', 'Violent Jihad Lyrics', sc.violent_jihad, true],
       ['terror_group', 'Terror Group Named', sc.terror_group, true],
       ['media_wing_intro', 'Media-Wing Intro', sc.media_wing_intro, true],
+      ...(sc.ideological_threat !== undefined ? [['ideological_threat', 'Ideological Threat', sc.ideological_threat, true]] : []),
       ['safe_exception', 'Safe Exception', sc.safe_exception, false],
     ];
+    const winScan = s1.window_scan;
+    const winChip = (winScan && winScan.num_windows)
+      ? `<span class="kv-chip">Window Scan: <strong>${esc(winScan.num_windows)}×${esc(winScan.win_sec)}s</strong> (${esc(winScan.outcome || 'checked')})</span>`
+      : '';
     const barHtml = bars.map(([, label, val, isDanger]) => {
       const pct = Math.max(0, Math.min(100, Number(val || 0)));
       const fillCls = isDanger ? (pct >= 35 ? 'danger' : '') : 'safe';
@@ -1169,6 +1191,7 @@ function renderJob(job) {
         <div class="kv-row">
           <span class="kv-chip">Detected Lang: <strong>${esc(s1.detected_language)}</strong></span>
           <span class="kv-chip">Vocal Mode: <strong>${esc(s1.vocal_mode)}</strong></span>
+          ${winChip}
           ${s1.cleared_early ? '<span class="badge badge-clean">Early Cleared (Saved Stages 2–4)</span>' : '<span class="badge badge-amber">Escalated to Stage 2 Transcription</span>'}
         </div>
         <div class="bar-list">${barHtml}</div>

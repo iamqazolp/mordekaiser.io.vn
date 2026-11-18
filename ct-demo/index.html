@@ -631,6 +631,83 @@
     animation: spin 0.7s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Multi-Policy Matrix */
+  .matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 10px;
+  }
+  .matrix-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 11px 13px;
+  }
+  .matrix-card.active-pol {
+    border-color: var(--teal);
+    box-shadow: inset 0 0 0 1px var(--teal);
+  }
+  .matrix-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .matrix-name {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+
+  /* Interactive Splice Timeline & Click-to-Seek Chips */
+  .timeline-box {
+    margin-top: 10px;
+    padding: 9px 11px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+  }
+  .timeline-track {
+    position: relative;
+    height: 12px;
+    background: var(--paper-deep);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 6px 0 8px;
+  }
+  .timeline-seg {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: var(--vermilion);
+    opacity: 0.85;
+    border-radius: 999px;
+    cursor: pointer;
+    min-width: 6px;
+  }
+  .timeline-seg:hover { opacity: 1; }
+  .seek-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--vermilion-line);
+    background: var(--vermilion-soft);
+    color: var(--vermilion);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .seek-chip:hover {
+    background: var(--vermilion);
+    color: #fff;
+  }
 </style>
 </head>
 <body>
@@ -669,6 +746,7 @@
         <div id="selectedFileNote" style="margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--teal);display:none;"></div>
 
         <audio id="player" controls preload="metadata"></audio>
+        <div id="timelineMount" class="timeline-box" style="display:none;"></div>
       </div>
 
       <div class="card">
@@ -773,6 +851,7 @@ const els = {
   fileInput: document.getElementById('fileInput'),
   selectedFileNote: document.getElementById('selectedFileNote'),
   player: document.getElementById('player'),
+  timelineMount: document.getElementById('timelineMount'),
   policySelect: document.getElementById('policySelect'),
   transcriberSelect: document.getElementById('transcriberSelect'),
   policyRules: document.getElementById('policyRules'),
@@ -840,7 +919,47 @@ function fmtTxText(v) {
   return s || '[NO LYRICS]';
 }
 
-const SLOT_ORDER = ['error', 'stage4', 'stage3', 'stage2', 'stage1', 'ingest'];
+const SLOT_ORDER = ['error', 'matrix', 'stage4', 'stage3', 'stage2', 'stage1', 'ingest'];
+
+function seekToSec(sec) {
+  const t = Math.max(0, Number(sec || 0));
+  if (!Number.isFinite(t)) return;
+  try {
+    els.player.currentTime = t;
+    const p = els.player.play();
+    if (p && typeof p.catch === 'function') p.catch(() => {});
+  } catch (_) {}
+}
+
+function renderTimeline(spans, durSec) {
+  if (!Array.isArray(spans) || !spans.length || !(durSec > 0)) {
+    els.timelineMount.style.display = 'none';
+    els.timelineMount.innerHTML = '';
+    return;
+  }
+  const segBars = spans.map(sp => {
+    const st = Math.max(0, Number(sp.start_sec || 0));
+    const en = Math.min(durSec, Math.max(st + 1, Number(sp.end_sec || st + 5)));
+    const leftPct = ((st / durSec) * 100).toFixed(2);
+    const widPct = Math.max(1.8, ((en - st) / durSec) * 100).toFixed(2);
+    return `<div class="timeline-seg" data-seek-sec="${st}" style="left:${leftPct}%;width:${widPct}%;" title="Jump to ${esc(sp.label || '')}: ${esc(sp.excerpt || '')}"></div>`;
+  }).join('');
+  const chips = spans.map(sp =>
+    `<button type="button" class="seek-chip" data-seek-sec="${Number(sp.start_sec || 0)}" title="${esc(sp.excerpt || '')}">&#9654; ${esc(sp.label || '')}</button>`
+  ).join(' ');
+  const nextHtml = `
+    <div style="display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:10.5px;color:var(--ink-2);">
+      <span><strong>Localized Splice / Anomaly Spans</strong> (click to seek)</span>
+      <span>${durSec.toFixed(1)}s total</span>
+    </div>
+    <div class="timeline-track">${segBars}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;">${chips}</div>
+  `;
+  if (els.timelineMount.innerHTML !== nextHtml) {
+    els.timelineMount.innerHTML = nextHtml;
+  }
+  els.timelineMount.style.display = 'block';
+}
 
 function ensureResultSlots() {
   if (!els.resultsMount.querySelector('.stage-grid')) {
@@ -894,6 +1013,7 @@ function selectPreset(id) {
     state.uploadedBlobUrl = null;
   }
   els.selectedFileNote.style.display = 'none';
+  renderTimeline([], 0);
   els.player.src = apiUrl(`/api/audio?id=${encodeURIComponent(id)}`);
   renderPresets();
 }
@@ -905,6 +1025,7 @@ function handleUploadedFile(file) {
   if (state.uploadedBlobUrl) URL.revokeObjectURL(state.uploadedBlobUrl);
   state.uploadedBlobUrl = URL.createObjectURL(file);
   els.player.src = state.uploadedBlobUrl;
+  renderTimeline([], 0);
   els.selectedFileNote.textContent = `Uploaded file ready: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
   els.selectedFileNote.style.display = 'block';
   renderPresets();
@@ -1023,7 +1144,54 @@ function renderJob(job) {
   }
 
   // Build persistent per-stage slot HTML so polling never resets scrollTop in live cards
-  const slotHtml = { error: '', stage4: '', stage3: '', stage2: '', stage1: '', ingest: '' };
+  const slotHtml = { error: '', matrix: '', stage4: '', stage3: '', stage2: '', stage1: '', ingest: '' };
+
+  const durEst = Number(
+    (stages.stage1 && stages.stage1.duration_sec)
+    || (stages.ingest && stages.ingest.metadata_audit && stages.ingest.metadata_audit.duration_sec)
+    || els.player.duration
+    || 0
+  );
+  const liveSpans = (final && final.flagged_spans) || (stages.stage2 && stages.stage2.flagged_spans) || [];
+  if (liveSpans.length && durEst > 0) {
+    renderTimeline(liveSpans, durEst);
+  }
+
+  const polMatrix = (final && final.policy_matrix) || (stages.stage3 && stages.stage3.policy_matrix) || null;
+  if (polMatrix && Object.keys(polMatrix).length > 1) {
+    const mCards = Object.values(polMatrix).map(pm => {
+      const pTag = pm.tag || (pm.verdict === 'relevant' ? 'Violative' : 'Clean');
+      const bCls = (pTag === 'Violative' || pTag === 'Confirmed Violative')
+        ? 'badge-viol'
+        : (pTag === 'Needs Review' ? 'badge-amber' : 'badge-clean');
+      const roleChip = pm.active
+        ? '<span class="badge badge-teal">Active Policy</span>'
+        : '<span class="badge badge-muted">Parallel Check</span>';
+      return `
+        <div class="matrix-card${pm.active ? ' active-pol' : ''}">
+          <div class="matrix-head">
+            <span class="matrix-name">${esc(pm.name)}</span>
+            <span class="badge ${bCls}">${esc(pTag)}</span>
+          </div>
+          <div class="kv-row" style="margin-bottom:6px;">
+            ${roleChip}
+            <span class="kv-chip">Risk: <strong>${esc(pm.risk_score ?? 0)}/100</strong></span>
+          </div>
+          <p class="evidence" style="font-size:12px;">${esc(pm.evidence || pm.subcategory || '')}</p>
+        </div>
+      `;
+    }).join('');
+    const mxCost = (stages.stage3 && stages.stage3.matrix_extra_cost_usd) || 0;
+    slotHtml.matrix = `
+      <section class="card">
+        <div class="stage-head">
+          <h3 class="stage-title">Parallel Multi-Policy Matrix (Single Policy-Blind Transcript)</h3>
+          <span class="stage-meta">0.0s extra wall · +${fmtUsd(mxCost)} marginal</span>
+        </div>
+        <div class="matrix-grid">${mCards}</div>
+      </section>
+    `;
+  }
 
   if (stages.stage4) {
     const s4 = stages.stage4;
@@ -1036,12 +1204,16 @@ function renderJob(job) {
     const reasonsRow = (s4.reasons && s4.reasons.length)
       ? `<div class="kv-row">${s4.reasons.map(r => `<span class="badge badge-amber">${esc(r)}</span>`).join('')}</div>`
       : '';
+    const cropInfo = h && h.cropped_audio && h.cropped_audio.used
+      ? `<span class="badge badge-teal" title="Cropped to intro + localized splice windows">Surgical Crop: ${esc(h.cropped_audio.excerpt_duration_sec)}s / ${esc(h.cropped_audio.original_duration_sec)}s</span>`
+      : '';
     let hHtml = '<div class="subpanel"><h4>Gemini 4 Hydrogen (Audio) <span class="badge badge-muted">Skipped</span></h4><p class="evidence">Terra resolved with clear confidence and no rare-language acoustic fallback was required.</p></div>';
     if (h && h.status === 'degraded_unavailable') {
       hHtml = `
         <div class="subpanel">
           <h4><span>Gemini 4 Hydrogen · Direct Audio</span><span class="badge badge-amber">Degraded · Unavailable</span></h4>
           <div class="kv-row" style="margin-bottom:6px;">
+            ${cropInfo}
             <span class="kv-chip">${esc(h.elapsed_sec ?? '—')}s · $0.00000</span>
           </div>
           <p class="evidence">${esc(h.error || 'Temporary API quota/rate limit unavailable; pipeline degraded conservatively.')}</p>
@@ -1053,6 +1225,7 @@ function renderJob(job) {
         <div class="subpanel">
           <h4><span>Gemini 4 Hydrogen · Direct Audio</span>${hBadge}</h4>
           <div class="kv-row" style="margin-bottom:6px;">
+            ${cropInfo}
             <span class="kv-chip">Confidence: <strong>${esc(hr.confidence_score ?? '—')}%</strong></span>
             <span class="kv-chip">Lang: <strong>${esc(hr.detected_language || '—')}</strong></span>
             <span class="kv-chip">${esc(h.elapsed_sec)}s · ${fmtUsd(h.cost_usd)}</span>
@@ -1125,6 +1298,13 @@ function renderJob(job) {
     const segHtml = tx.spoken_segments
       ? `<div class="intro-box"><strong>Spoken Mid-Track Segment Detected:</strong> ${esc(tx.spoken_segments)}</div>`
       : '';
+    const spans = s2.flagged_spans || [];
+    const spanRowHtml = spans.length
+      ? `<div class="kv-row" style="align-items:center;"><span style="font-family:var(--mono);font-size:11px;color:var(--ink-2);">Jump to segment:</span>${spans.map(sp => `<button type="button" class="seek-chip" data-seek-sec="${Number(sp.start_sec || 0)}" title="${esc(sp.excerpt || '')}">&#9654; ${esc(sp.label || '')} (${esc(sp.kind || 'splice')})</button>`).join('')}</div>`
+      : '';
+    const routeChip = (s2.routed_by && s2.routed_by !== 'explicit_selection')
+      ? `<span class="kv-chip" title="Adaptive Stage 2 model selection">Route: <strong>${esc(s2.routed_by)}</strong></span>`
+      : '';
     const expCls = state.txExpanded ? ' expanded' : '';
     const expLabel = state.txExpanded ? 'Collapse Box' : 'Expand Full Lyrics';
     slotHtml.stage2 = `
@@ -1137,10 +1317,12 @@ function renderJob(job) {
           <span class="kv-chip">Languages: <strong>${esc(txLangs)}</strong></span>
           <span class="kv-chip">Vocal Mode: <strong>${esc(tx.vocal_mode)}</strong></span>
           <span class="kv-chip">Lyric Clarity: <strong>${esc(tx.lyric_clarity)}</strong></span>
+          ${routeChip}
           <span class="badge badge-teal">Zero Policy Terms Seen</span>
           ${s2.hedged ? '<span class="badge badge-amber">Tail Hedge Failover</span>' : ''}
           <button type="button" class="tx-toggle-btn">${expLabel}</button>
         </div>
+        ${spanRowHtml}
         ${introHtml}${segHtml}
         <div class="tx-cols">
           <div>
@@ -1168,8 +1350,12 @@ function renderJob(job) {
       ['safe_exception', 'Safe Exception', sc.safe_exception, false],
     ];
     const winScan = s1.window_scan;
-    const winChip = (winScan && winScan.num_windows)
-      ? `<span class="kv-chip">Window Scan: <strong>${esc(winScan.num_windows)}×${esc(winScan.win_sec)}s</strong> (${esc(winScan.outcome || 'checked')})</span>`
+    const dspScan = s1.dsp_scan;
+    const dspChip = dspScan
+      ? `<span class="kv-chip">DSP Gate: <strong>${dspScan.is_stationary ? `Stationary (${Number(dspScan.max_novelty || 0).toFixed(2)})` : `Splice Novelty ${Number(dspScan.max_novelty || 0).toFixed(2)}`}</strong></span>`
+      : '';
+    const winChip = winScan
+      ? `<span class="kv-chip">Window Scan: <strong>${winScan.num_windows ? `${esc(winScan.num_windows)}×${esc(winScan.win_sec)}s` : '0 uploads'}</strong> (${esc(winScan.outcome || 'checked')})</span>`
       : '';
     const barHtml = bars.map(([, label, val, isDanger]) => {
       const pct = Math.max(0, Math.min(100, Number(val || 0)));
@@ -1191,6 +1377,7 @@ function renderJob(job) {
         <div class="kv-row">
           <span class="kv-chip">Detected Lang: <strong>${esc(s1.detected_language)}</strong></span>
           <span class="kv-chip">Vocal Mode: <strong>${esc(s1.vocal_mode)}</strong></span>
+          ${dspChip}
           ${winChip}
           ${s1.cleared_early ? '<span class="badge badge-clean">Early Cleared (Saved Stages 2–4)</span>' : '<span class="badge badge-amber">Escalated to Stage 2 Transcription</span>'}
         </div>
@@ -1202,9 +1389,14 @@ function renderJob(job) {
   if (stages.ingest) {
     const ing = stages.ingest;
     const aud = ing.metadata_audit || {};
+    const sg = aud.stereo_guard || {};
     const statusBadge = ing.status === 'repost_hit'
-      ? `<span class="badge badge-clean">Cache Hit · ${esc(ing.policy_action)} (${Math.round((ing.match_ratio || 0) * 100)}% aligned)</span>`
+      ? `<span class="badge badge-clean">Cache Hit · ${esc(ing.policy_action)} (${Math.round((ing.match_ratio || 0) * 100)}% aligned${ing.matched_stem ? ' · ' + esc(ing.matched_stem) + ' ch' : ''})</span>`
       : '<span class="badge badge-muted">Cache Bypassed · Live AI Path</span>';
+    const stereoBadge = (sg.mode === 'anti_phase_rescued' || sg.mode === 'right_channel_rescued')
+      ? `<span class="badge badge-amber">Stereo Guard: ${esc(sg.mode.replace(/_/g, ' '))} (${esc(sg.rescued_windows)}w)</span>`
+      : (sg.channels === 2 ? `<span class="badge badge-teal">Stereo Phase-Safe (${esc(sg.mode || 'verified')})</span>` : '');
+    const sanBadge = aud.metadata_sanitized ? '<span class="badge badge-teal">All Container Tags Stripped</span>' : '';
     const timingLabel = ing.elapsed_sec !== undefined
       ? `${esc(ing.elapsed_sec)}s (norm ${esc(ing.transcode_sec || 0)}s + up ${esc(ing.upload_sec || 0)}s)`
       : `${esc(ing.elapsed_ms)} ms`;
@@ -1214,14 +1406,15 @@ function renderJob(job) {
     slotHtml.ingest = `
       <section class="card">
         <div class="stage-head">
-          <h3 class="stage-title">Ingest · Metadata Sanitization, Normalization &amp; Upload</h3>
+          <h3 class="stage-title">Ingest · Metadata Sanitization, Stereo Guard &amp; Upload</h3>
           <span class="stage-meta">${timingLabel} · $0.00</span>
         </div>
         <div class="kv-row">
           ${statusBadge}
-          <span class="kv-chip">Stripped Metadata: <strong>${Number(aud.stripped_bytes || 0).toLocaleString()} bytes</strong></span>
+          ${stereoBadge}
+          ${sanBadge}
+          <span class="kv-chip">Stripped MP3 Tags: <strong>${Number(aud.stripped_bytes || 0).toLocaleString()} bytes</strong></span>
           ${normChip}
-          <span class="kv-chip">ID3v2: <strong>${aud.had_id3v2 ? 'Removed' : 'None'}</strong> · ID3v1: <strong>${aud.had_id3v1 ? 'Removed' : 'None'}</strong></span>
         </div>
       </section>
     `;
@@ -1261,6 +1454,7 @@ async function runPipeline() {
   state.running = true;
   state.startTs = Date.now();
   state.slotCache = {};
+  renderTimeline([], 0);
   els.runBtn.disabled = true;
   els.runBtnText.innerHTML = '<span class="spinner"></span> Running live stages...';
   resetRail();
@@ -1361,7 +1555,17 @@ async function init() {
     }
   });
 
+  els.timelineMount.addEventListener('click', e => {
+    const el = e.target.closest('[data-seek-sec]');
+    if (el) seekToSec(el.getAttribute('data-seek-sec'));
+  });
+
   els.resultsMount.addEventListener('click', e => {
+    const seekEl = e.target.closest('[data-seek-sec]');
+    if (seekEl) {
+      seekToSec(seekEl.getAttribute('data-seek-sec'));
+      return;
+    }
     const btn = e.target.closest('.tx-toggle-btn');
     if (!btn) return;
     state.txExpanded = !state.txExpanded;
